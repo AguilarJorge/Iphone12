@@ -1,0 +1,79 @@
+@mixin flex ($dir: row, $wrap: wrap, $ai: center, $jc: center, $ac: center){
+  display: flex;
+  flex-direction: $dir;
+  flex-wrap: $wrap;
+  align-items: $ai;
+  justify-content: $jc;
+  align-content: $ac;
+}
+@mixin imagen ($url: '', $size: cover, $posicion: center, $repeat: no-repeat, $parallax: false) {
+  @if  $url != '' {
+    background-image: url($url);
+  }
+  background-size: $size;
+  background-position: $posicion;
+  background-repeat: $repeat;
+  @if $parallax == true {
+    background-attachment: fixed;
+  }
+}
+$negro: #1d1d1d;
+$blanco: #fff;
+$mainColor: #d03038;
+
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+body{
+  overflow-x: hidden;
+  color: #666;
+  margin: 0 auto;
+  *{
+    font-family: 'Pacifico', cursive;
+  }
+  p, h1, h2, h3, h4, h5, h6{
+    margin: 0;
+  }
+  a {
+    color: #666;
+    text-decoration: none;
+  }
+  ul, li{
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
+}
+
+
+
+.iphoneMock{
+  @include flex;
+  width: 100%;
+  min-height: 100vh;
+  .container{
+    @include flex;
+    width: 90%;
+    margin: 0 auto;
+    padding: 50px 0;
+    .iphone{
+      width: 320px;
+      height: 650px;
+      border-radius: 45px;
+      .borde{
+        @include flex;
+        height: 100%;
+        width: 100%;
+        background-color: $mainColor;
+        box-shadow: inset 0 0 6px 1px $blanco;
+        border-radius: 45px;
+        overflow: hidden;
+        .mainScreen{
+          width: calc(100% - 14px);
+          height: calc(100% - 14px);
+          border-radius: 40px;
+          background-color: $negro;
+        }
+      }
+    }
+  }
+}
