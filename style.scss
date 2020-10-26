@@ -61,6 +61,7 @@ body{
       height: 640px;
       border-radius: 45px;
       position: relative;
+      user-select: none;
       &:before, &:after{
         content: "";
         position: absolute;
@@ -160,6 +161,7 @@ body{
             border-bottom-left-radius: 17px;
             border-bottom-right-radius: 17px;
             background-color: $negro;
+            z-index: 100;
             &:before, &:after{
               content: "";
               position: absolute;
@@ -238,6 +240,7 @@ body{
             height: calc(100% - 14px);
             border-radius: 32px;
             background-color: $blanco;
+            position: relative;
             .statusBar{
               @include flex($jc: space-between);
               height: 20px;
@@ -253,7 +256,7 @@ body{
                 .signal{
                   @include flex;
                   width: 18px;
-                  height: 12px;
+                  height: 10px;
                   position: relative;
                   overflow: hidden;
                   &.mid{
@@ -300,6 +303,11 @@ body{
                       height: 40%;
                     }
                   }
+                }
+                .datos{
+                  margin: 0 3px;
+                  color: $blanco;
+                  font-size: 10px;
                 }
                 .wifi{
                   @include flex;
@@ -387,10 +395,17 @@ body{
             }
             .lockScreen{
               @include flex(column, $jc: space-between);
+              display: none;
+              position: absolute;
               width: 100%;
               height: calc(100% - 25px);
               padding: 30px;
               box-sizing: border-box;
+              &:hover{
+                .unlockBar{
+                  opacity: 1;
+                }
+              }
               .up{
                 color: $blanco;
                 text-align: center;
@@ -425,13 +440,119 @@ body{
               .down{
                 @include flex($jc: space-between);
                 width: 100%;
-                .icon{
-                  width: 15px;
-                  height: 15px;
+                .sysIcon{
+                  width: 20px;
+                  height: 20px;
                   padding: 10px;
                   border-radius: 50%;
                   background-color: rgba($negro,.5);
+                  color: $blanco;
+                  cursor: pointer;
+                  svg{
+                    width: 100%;
+                    height: 100%;
+                    path, circle{
+                      fill: currentColor;
+                    }
+                  }
                 }
+              }
+              .unlockBar{
+                position: absolute;
+                bottom: 8px;
+                width: 40%;
+                height: 4px;
+                border-radius: 20px;
+                background-color: rgba($blanco,.7);
+                opacity: 0;
+                transition: ease all .2s;
+                &:hover{
+                  &:before{
+                    opacity: 1;
+                    transform: none;
+                  }
+                }
+                &:before{
+                  content: attr(data-msj);
+                  position: absolute;
+                  bottom: 100%;
+                  left: 0;
+                  right: 0;
+                  max-width: 100px;
+                  margin: 0 auto;
+                  padding-bottom: 5px;
+                  color: $blanco;
+                  font-size: 10px;
+                  text-align: center;
+                  opacity: 0;
+                  transform: translateY(5px);
+                  transition: ease all .1s;
+                }
+              }
+            }
+            .appScreen{
+              @include flex(column, $jc: space-between);
+              position: absolute;
+              width: 100%;
+              height: calc(100% - 25px);
+              padding: 10px;
+              box-sizing: border-box;
+              .app{
+                width: 62px;
+                .icono{
+                  @include imagen;
+                  width: 50px;
+                  height: 50px;
+                  margin: 3px auto;
+                  border-radius: 10px;
+                  background-color: $blanco;
+                }
+                .nombre{
+                  color: $blanco;
+                  font-size: 10px;
+                  text-align: center;
+                  margin-bottom: 7px;
+                }
+              }
+              .mainApps{
+                width: 100%;
+                max-width: 250px;
+                height: calc(100% - 25px - 85px);
+                margin: 0 auto;
+                overflow: hidden;
+              }
+              .wrapperApps{
+                @include flex(row, nowrap, center, flex-start);
+                width: 100%;
+                height: 100%;
+                transition: ease all 0.2s;
+                .grupo{
+                  @include flex(row, wrap, flex-start, flex-start, flex-start);
+                  width: 100%;
+                  height: 100%;
+                  min-width: 100%;
+                }
+              }
+              .wrapperDots{
+                @include flex;
+                .dot{
+                  width: 8px;
+                  height: 8px;
+                  margin: 5px;
+                  border-radius: 50%;
+                  background-color: rgba($blanco,.5);
+                  &.activo{
+                    background-color: $blanco;
+                  }
+                }
+              }
+              .deckApps{
+                @include flex;
+                width: 100%;
+                padding: 10px 5px;
+                border-radius: 25px;
+                background-color: rgba($blanco,.3);
+                box-sizing: border-box;
               }
             }
           }

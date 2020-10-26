@@ -1,0 +1,355 @@
+$(function(){
+  const globalState = {
+    apps: [
+      {
+        nombre: 'Calendario',
+        icono: './appsIcon/calendario.png',
+        type: 'widgetFull'
+      },
+      {
+        nombre: 'Clima',
+        icono: './appsIcon/clima.png',
+        type: 'widget'
+      },
+      {
+        nombre: 'FaceTime',
+        icono: './appsIcon/facetime.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Calendario',
+        icono: './appsIcon/calendario.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Reloj',
+        icono: './appsIcon/reloj.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Fotos',
+        icono: './appsIcon/fotos.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Mapas',
+        icono: './appsIcon/maps.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Cámara',
+        icono: './appsIcon/camara.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Recordatorios',
+        icono: './appsIcon/recordatorios.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Facebook',
+        icono: './appsIcon/facebook.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Notas',
+        icono: './appsIcon/notas.png',
+        type: 'app'
+      },
+      {
+        nombre: 'App Store',
+        icono: './appsIcon/appstore.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Salud',
+        icono: './appsIcon/salud.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Mensajes',
+        icono: './appsIcon/mensajes.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Configuración',
+        icono: './appsIcon/configuracion.png',
+        type: 'app'
+      },
+      {
+        nombre: 'BBVA',
+        icono: './appsIcon/bbva.png',
+        type: 'app'
+      },
+      {
+        nombre: 'WhatsApp',
+        icono: './appsIcon/whatsapp.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Calculadora',
+        icono: './appsIcon/calculadora.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Twitter',
+        icono: './appsIcon/twitter.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Messenger',
+        icono: './appsIcon/messenger.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Brújula',
+        icono: './appsIcon/brujula.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Spotify',
+        icono: './appsIcon/spotify.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Pinterest',
+        icono: './appsIcon/pinterest.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Google Home',
+        icono: './appsIcon/home.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Liverpool',
+        icono: './appsIcon/liverpool.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Musica',
+        icono: './appsIcon/musica.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Netflix',
+        icono: './appsIcon/netflix.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Notas de voz',
+        icono: './appsIcon/notasvoz.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Wallet',
+        icono: './appsIcon/wallet.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Podcasts',
+        icono: './appsIcon/podcast.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Archivos',
+        icono: './appsIcon/archivos.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Contactos',
+        icono: './appsIcon/contactos.png',
+        type: 'app'
+      },
+      {
+        nombre: 'YouTube',
+        icono: './appsIcon/youtube.png',
+        type: 'app'
+      },
+      {
+        nombre: 'Buscar iPhone',
+        icono: './appsIcon/findphone.png',
+        type: 'app'
+      }
+    ],
+    wrapperApps: {
+      appsGrupo: 24,
+      grupoActivo: 1,
+      medida: $('.wrapperApps').outerWidth(true),
+      transform: 0
+    }
+  }
+  
+  const formatFecha = function (timeStamp, config) {
+    config = jQuery.extend({
+      formato: 'd/m/y',
+      separador: ' de ',
+      mesCompleto: false,
+      hora: false,
+    }, config);
+    var fecha = new Date(timeStamp);
+    var meses = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre"
+    ];
+    var dia = fecha.getDate();
+    var mes = meses[fecha.getMonth()];
+    var anio = fecha.getFullYear();
+    if (!config.mesCompleto) mes = mes.substring(0, 3);
+    var hora = fecha.getHours();
+    if (hora < 10) hora = '0' + hora;
+    var minutos = fecha.getMinutes();
+    if (minutos < 10) minutos = '0' + minutos;
+    var arrFormato = config.formato.split('/');
+    var formatoFull = [];
+    $.each(arrFormato, function (i, e) {
+      if (e.toLowerCase() == 'd') {
+        e = dia;
+      } else if (e.toLowerCase() == 'm') {
+        e = mes;
+      } else if (e.toLowerCase() == 'y') {
+        e = anio;
+      }
+      if (i == arrFormato.length - 1) {
+        formatoFull.push(e);
+      } else {
+        formatoFull.push(e, config.separador);
+      }
+    })
+    formatoFull = formatoFull.join('');
+    if (config.hora) {
+      return formatoFull + '. ' + hora + ':' + minutos;
+    } else {
+      return formatoFull;
+    }
+  }
+
+  $.fn.extend({
+    touchMov: function(config){
+      config = jQuery.extend({
+        mov: 'x',
+        threshold: 50,
+        movIzq: function () {console.log('movio a la izquierda')},
+        movDer: function () {console.log('movio a la derecha')},
+        movUp: function () { console.log('movio hacia arriba') },
+        movDown: function () { console.log('movio hacia abajo') },
+        updateMovX: function (e, mov) { console.log('se esta moviendo en x', mov) },
+        updateMovY: function (e, mov) { console.log('se esta moviendo en y', mov) },
+        finishMov: function () { console.log('Termino de mover') }
+      }, config);
+      let el = this;
+      let initCoords, movCoords = { x: 0, y: 0 };
+      el.mousedown(function (e) {
+        initCoords = { x: e.pageX, y: e.pageY };
+        el.mousemove(function (e2) {
+          movCoords = { x: e2.pageX, y: e2.pageY };
+          if (config.mov === 'x') {
+            config.updateMovX(e2, (movCoords.x - initCoords.x))
+          } else if (config.mov === 'y') {
+            config.updateMovY(e2, (movCoords.y - initCoords.y))
+          }
+        })
+        el.mouseup(function (ex) {
+          if (config.mov === 'x') {
+            (movCoords.x - initCoords.x) > 0 ? config.movDer(ex) : config.movIzq(ex);
+          } else if (config.mov === 'y') {
+            (movCoords.y - initCoords.y) > 0 ? config.movDown(ex) : config.movUp(ex);
+          }
+          config.finishMov(ex);
+          el.off('mousemove');
+          el.off('mouseup');
+        })
+        el.mouseleave(function (a) {
+          if (config.mov === 'x') {
+            (movCoords.x - initCoords.x) > 0 ? config.movDer(a) : config.movIzq(a);
+          } else if (config.mov === 'y') {
+            (movCoords.y - initCoords.y) > 0 ? config.movDown(a) : config.movUp(a);
+          }
+          config.finishMov(a);
+          el.off('mousemove');
+          el.off('mouseup');
+        })
+      })
+      return this;
+    }
+  })
+  
+  
+  function pintarApps(apps, container, containerDots){
+    globalState.wrapperApps.grupos = Math.ceil(apps.length / globalState.wrapperApps.appsGrupo);
+    let appCount = 1;
+    let html = '';
+    apps.map((app) => {
+      if (appCount == 1) html += '<div class="grupo">';
+      html += `<div class="app"><div class="icono" style="background-image:url(${app.icono});"></div><p class="nombre">${app.nombre}</p></div>`;
+      if (appCount == globalState.wrapperApps.appsGrupo) {
+        html += '</div>';
+        appCount = 1;
+        return false;
+      }
+      appCount++;
+    })
+    if (globalState.wrapperApps.grupos > 1) {
+      for (let index = 0; index < globalState.wrapperApps.grupos; index++) {
+        containerDots.append(`<div class="dot ${index == 0 ? 'activo':''}"></div>`);
+      }
+    }
+    container.append(html);
+  }
+
+  pintarApps(globalState.apps, $('.wrapperApps'), $('.wrapperDots'));
+
+  $('.wrapperApps').touchMov({
+    updateMovX: function(e, mov){
+      $(e.currentTarget).css({
+        transform: `translateX(${globalState.wrapperApps.transform + mov}px)`,
+        transition: 'none'
+      });
+    },
+    movIzq: function (e) {
+      if (globalState.wrapperApps.grupoActivo != globalState.wrapperApps.grupos) {
+        globalState.wrapperApps.grupoActivo++;
+      }
+      $(e.currentTarget).css({
+        transform: `translateX(-${globalState.wrapperApps.medida * (globalState.wrapperApps.grupoActivo - 1)}px)`,
+        transition: 'ease all 0.2s'
+      });
+      $('.wrapperDots .dot').removeClass('activo');
+      $('.wrapperDots .dot').eq(globalState.wrapperApps.grupoActivo - 1).addClass('activo');
+    },
+    movDer: function (e) {
+      if (globalState.wrapperApps.grupoActivo != 1) {
+        globalState.wrapperApps.grupoActivo--;
+      }
+      $(e.currentTarget).css({
+        transform: `translateX(${globalState.wrapperApps.medida * (globalState.wrapperApps.grupoActivo - 1)}px)`,
+        transition: 'ease all 0.2s'
+      });
+      $('.wrapperDots .dot').removeClass('activo');
+      $('.wrapperDots .dot').eq(globalState.wrapperApps.grupoActivo - 1).addClass('activo');
+    },
+    finishMov: function(e){
+      transform = e.currentTarget.style.transform;
+      if (transform.length) {
+        transform = transform.split('(');
+        transform = transform[1].split('px');
+        transform = parseInt(transform[0]);
+      } else {
+        transform = 0;
+      }
+      globalState.wrapperApps.transform = transform;
+    }
+  });
+
+
+})
