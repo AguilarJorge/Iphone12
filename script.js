@@ -1,175 +1,209 @@
-$(function(){
+// $(function(){
   const globalState = {
     apps: [
       {
         nombre: 'Calendario',
         icono: './appsIcon/calendario.png',
-        type: 'widgetFull'
+        type: 'widgetFull',
+        dinamico: true
       },
       {
         nombre: 'Clima',
         icono: './appsIcon/clima.png',
-        type: 'widget'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'FaceTime',
         icono: './appsIcon/facetime.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Calendario',
         icono: './appsIcon/calendario.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Reloj',
         icono: './appsIcon/reloj.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Fotos',
         icono: './appsIcon/fotos.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Mapas',
         icono: './appsIcon/maps.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Cámara',
         icono: './appsIcon/camara.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Recordatorios',
         icono: './appsIcon/recordatorios.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Facebook',
         icono: './appsIcon/facebook.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Notas',
         icono: './appsIcon/notas.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'App Store',
         icono: './appsIcon/appstore.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Salud',
         icono: './appsIcon/salud.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Mensajes',
         icono: './appsIcon/mensajes.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Configuración',
         icono: './appsIcon/configuracion.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'BBVA',
         icono: './appsIcon/bbva.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'WhatsApp',
         icono: './appsIcon/whatsapp.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Calculadora',
         icono: './appsIcon/calculadora.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Twitter',
         icono: './appsIcon/twitter.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Messenger',
         icono: './appsIcon/messenger.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Brújula',
         icono: './appsIcon/brujula.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Spotify',
         icono: './appsIcon/spotify.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Pinterest',
         icono: './appsIcon/pinterest.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Google Home',
         icono: './appsIcon/home.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Liverpool',
         icono: './appsIcon/liverpool.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Musica',
         icono: './appsIcon/musica.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Netflix',
         icono: './appsIcon/netflix.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Notas de voz',
         icono: './appsIcon/notasvoz.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Wallet',
         icono: './appsIcon/wallet.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Podcasts',
         icono: './appsIcon/podcast.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Archivos',
         icono: './appsIcon/archivos.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Contactos',
         icono: './appsIcon/contactos.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'YouTube',
         icono: './appsIcon/youtube.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       },
       {
         nombre: 'Buscar iPhone',
         icono: './appsIcon/findphone.png',
-        type: 'app'
+        type: 'app',
+        dinamico: false
       }
     ],
     wrapperApps: {
@@ -268,6 +302,7 @@ $(function(){
           config.finishMov(ex);
           el.off('mousemove');
           el.off('mouseup');
+          el.off('mouseleave');
         })
         el.mouseleave(function (a) {
           if (config.mov === 'x') {
@@ -278,6 +313,7 @@ $(function(){
           config.finishMov(a);
           el.off('mousemove');
           el.off('mouseup');
+          el.off('mouseleave');
         })
       })
       return this;
@@ -291,13 +327,16 @@ $(function(){
     let html = '';
     apps.map((app) => {
       if (appCount == 1) html += '<div class="grupo">';
-      html += `<div class="app"><div class="icono" style="background-image:url(${app.icono});"></div><p class="nombre">${app.nombre}</p></div>`;
+      html += `<div class="app ${app.type == 'widgetFull' ? 'widgetFull':''}" data-app="${app.type+app.nombre}">
+                <div class="icono" style="${!app.dinamico ? `background-image:url(${app.icono});` : 'background-color:#fff;'}"></div>
+                <p class="nombre">${app.nombre}</p>
+      </div>`;
       if (appCount == globalState.wrapperApps.appsGrupo) {
         html += '</div>';
         appCount = 1;
         return false;
       }
-      appCount++;
+      app.type == 'widgetFull' ? appCount = appCount + 8 : appCount++;
     })
     if (globalState.wrapperApps.grupos > 1) {
       for (let index = 0; index < globalState.wrapperApps.grupos; index++) {
@@ -330,11 +369,16 @@ $(function(){
     movDer: function (e) {
       if (globalState.wrapperApps.grupoActivo != 1) {
         globalState.wrapperApps.grupoActivo--;
+        $(e.currentTarget).css({
+          transform: `translateX(${globalState.wrapperApps.transform + globalState.wrapperApps.medida}px)`,
+          transition: 'ease all 0.2s'
+        });
+      } else {
+        $(e.currentTarget).css({
+          transform: `translateX(${globalState.wrapperApps.medida * (globalState.wrapperApps.grupoActivo - 1)}px)`,
+          transition: 'ease all 0.2s'
+        });
       }
-      $(e.currentTarget).css({
-        transform: `translateX(${globalState.wrapperApps.medida * (globalState.wrapperApps.grupoActivo - 1)}px)`,
-        transition: 'ease all 0.2s'
-      });
       $('.wrapperDots .dot').removeClass('activo');
       $('.wrapperDots .dot').eq(globalState.wrapperApps.grupoActivo - 1).addClass('activo');
     },
@@ -352,4 +396,4 @@ $(function(){
   });
 
 
-})
+// })
