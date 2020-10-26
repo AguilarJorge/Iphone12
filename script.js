@@ -1,4 +1,4 @@
-// $(function(){
+$(function(){
   const globalState = {
     apps: [
       {
@@ -211,6 +211,10 @@
       grupoActivo: 1,
       medida: $('.wrapperApps').outerWidth(true),
       transform: 0
+    },
+    dateTime: {
+      meses: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      dias: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
     }
   }
   
@@ -317,6 +321,35 @@
         })
       })
       return this;
+    },
+    calendario: function(config){
+      config = jQuery.extend({
+        fecha: new Date(),
+        diaCompleto: false
+      }, config);
+      let mes = globalState.dateTime.meses[config.fecha.getMonth()];
+      let diasMes = new Date(config.fecha.getFullYear(), (config.fecha.getMonth() + 1), 0).getDate();
+      let hoy = config.fecha.getDate();
+      let primerDia = new Date(config.fecha.getFullYear(), config.fecha.getMonth(), 0).getDay();
+      this.append(`
+        <div class="mes">
+          <p class="mesName">${mes}</p>
+          <div class="calendarioTabla">
+            <div class="tablaHeader"></div>
+            <div class="tablaContent"></div>
+          </div>
+        </div>`
+      );
+      let header = this.find('.mes .tablaHeader');
+      let content = this.find('.mes .tablaContent');
+      globalState.dateTime.dias.map(dia => header.append(`<div class="diaName">${config.diaCompleto ? dia : dia.charAt(0)}</div>`))
+      for (var k = 0; k <= primerDia; k++) {
+        content.prepend('<div></div>');
+      }
+      for (let index = 1; index <= diasMes; index++) {
+        content.append(`<div class="diaNum ${hoy == index ? 'activo':''}">${index}</div>`);
+      }
+      return this;
     }
   })
   
@@ -347,7 +380,9 @@
   }
 
   pintarApps(globalState.apps, $('.wrapperApps'), $('.wrapperDots'));
-
+  
+  $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono').append('<div class="eventos"><p>Sin más eventos para hoy</p></div><div class="calendarioWrapper"></div>');
+  $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono .calendarioWrapper').calendario();
   $('.wrapperApps').touchMov({
     updateMovX: function(e, mov){
       $(e.currentTarget).css({
@@ -396,4 +431,4 @@
   });
 
 
-// })
+})
