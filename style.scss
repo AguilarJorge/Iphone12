@@ -250,10 +250,19 @@ body{
               height: 20px;
               padding: 5px 20px 0px 20px;
               padding-right: 12px;
-              .operador{
+              transition: ease all .1s;
+              &.mov{
+                transform: translateY(-100%);
+              }
+              .leftSide{
                 color: $blanco;
                 font-size: 10px;
                 text-transform: uppercase;
+                >*{
+                  &.hidden{
+                    display: none;
+                  }
+                }
               }
               .rightSide{
                 @include flex($jc: flex-end);
@@ -507,6 +516,10 @@ body{
               padding: 10px;
               box-sizing: border-box;
               transition: ease all .4s;
+              &.moveOut{
+                transition-duration: .2s;
+                transform: translateX(100%);
+              }
               &.hidden{
                 opacity: 0;
                 visibility: hidden;
@@ -760,6 +773,26 @@ body{
                 border-radius: 25px;
                 background-color: rgba($blanco,.3);
                 box-sizing: border-box;
+              }
+            }
+            .widgetCenter{
+              @include flex(column, $jc: space-between);
+              position: absolute;
+              width: 100%;
+              height: calc(100% - 25px);
+              padding: 10px;
+              box-sizing: border-box;
+              backdrop-filter: blur(5px);
+              transition: ease all .3s;
+              &.hidden{
+                transform: translateX(-100%);
+              }
+              .buscador{
+                width: 100%;
+                height: 35px;
+                border-radius: 10px;
+                margin: 10px auto 30px auto;
+                background-color: rgba($blanco,.5);
               }
             }
           }

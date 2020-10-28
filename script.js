@@ -305,8 +305,7 @@ $(function(){
       }, config);
       let hoy = config.fecha.getDate();
       let dia = globalState.dateTime.dias[config.fecha.getDay()];
-      this.append(`<div class="fechaWrapper"><p class="diaNom">${config.diaCompleto ? dia : dia.substring(0, 3)}</p><p class="diaNum">${hoy}</p></div>`)
-
+      this.append(`<div class="fechaWrapper"><p class="diaNom">${config.diaCompleto ? dia : dia.substring(0, 3)}</p><p class="diaNum">${hoy}</p></div>`);
       return this;
     },
     reloj: function(){
@@ -349,12 +348,23 @@ $(function(){
           minutos = hoy.getMinutes();
           if (minutos < 10) minutos = '0' + minutos;
           this.empty();
-          this.append(`<div class="hora">${hora}:${minutos}</div>`);
+          this.text(`${hora}:${minutos}`);
         }, 1000);
       }
-      this.append(`<div class="hora">${hora}:${minutos}</div>`);
+      this.text(`${hora}:${minutos}`);
       return this;
-    }
+    },
+    fecha: function (config) {
+      config = jQuery.extend({
+        fecha: new Date(),
+        diaCompleto: true
+      }, config);
+      let hoy = config.fecha.getDate();
+      let dia = globalState.dateTime.dias[config.fecha.getDay()];
+      let mes = globalState.dateTime.meses[config.fecha.getMonth()];
+      this.text(`${config.diaCompleto ? dia : dia.substring(0, 3)}, ${hoy} de ${mes}`);
+      return this;
+    },
   })
   
   //Functions
@@ -391,19 +401,24 @@ $(function(){
   $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono .calendarioWrapper').calendario();
   $('.wrapperApps .app.calendarioDinamico .icono').fechaIcono();
   $('.wrapperApps .app.relojDinamico .icono').reloj();
-  $('.statusBar .wrapperHora').hora();
-  $('.lockScreen .lockHora').hora();
+  $('.statusBar .hora').hora();
+  $('.lockScreen .hora').hora();
+  $('.lockScreen .fecha').fecha();
 
   //Touch actions
   $('.lockScreen').touchMov({
     mov: 'y',
     movUp: function(e){
-      console.log(e.currentTarget);
+      $(e.currentTarget).siblings('.statusBar').addClass('mov');
       $(e.currentTarget).addClass('hidden');
       $(e.currentTarget).siblings('.appScreen.hidden').removeClass('hidden');
+      setTimeout(() => {
+        $(e.currentTarget).siblings('.statusBar').removeClass('mov');
+        $(e.currentTarget).siblings('.statusBar').find('.operador').addClass('hidden');
+        $(e.currentTarget).siblings('.statusBar').find('.hora').removeClass('hidden');
+      }, 300)
     }
   });
-
   $('.wrapperApps').touchMov({
     updateMovX: function(e, mov){
       $(e.currentTarget).css({
@@ -430,6 +445,9 @@ $(function(){
           transition: 'ease all 0.2s'
         });
       } else {
+        console.log($(e.currentTarget));
+        $(e.currentTarget).parents('.appScreen').addClass('moveOut');
+        $(e.currentTarget).parents('.appScreen').siblings('.widgetCenter').removeClass('hidden');
         $(e.currentTarget).css({
           transform: `translateX(${globalState.wrapperApps.medida * (globalState.wrapperApps.grupoActivo - 1)}px)`,
           transition: 'ease all 0.2s'
