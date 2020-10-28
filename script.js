@@ -1,4 +1,5 @@
 $(function(){
+  //Global Vars
   const globalState = {
     apps: [
       {
@@ -23,13 +24,13 @@ $(function(){
         nombre: 'Calendario',
         icono: './appsIcon/calendario.png',
         type: 'app',
-        dinamico: false
+        dinamico: true
       },
       {
         nombre: 'Reloj',
         icono: './appsIcon/reloj.png',
         type: 'app',
-        dinamico: false
+        dinamico: true
       },
       {
         nombre: 'Fotos',
@@ -217,61 +218,7 @@ $(function(){
       dias: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
     }
   }
-  
-  const formatFecha = function (timeStamp, config) {
-    config = jQuery.extend({
-      formato: 'd/m/y',
-      separador: ' de ',
-      mesCompleto: false,
-      hora: false,
-    }, config);
-    var fecha = new Date(timeStamp);
-    var meses = [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre"
-    ];
-    var dia = fecha.getDate();
-    var mes = meses[fecha.getMonth()];
-    var anio = fecha.getFullYear();
-    if (!config.mesCompleto) mes = mes.substring(0, 3);
-    var hora = fecha.getHours();
-    if (hora < 10) hora = '0' + hora;
-    var minutos = fecha.getMinutes();
-    if (minutos < 10) minutos = '0' + minutos;
-    var arrFormato = config.formato.split('/');
-    var formatoFull = [];
-    $.each(arrFormato, function (i, e) {
-      if (e.toLowerCase() == 'd') {
-        e = dia;
-      } else if (e.toLowerCase() == 'm') {
-        e = mes;
-      } else if (e.toLowerCase() == 'y') {
-        e = anio;
-      }
-      if (i == arrFormato.length - 1) {
-        formatoFull.push(e);
-      } else {
-        formatoFull.push(e, config.separador);
-      }
-    })
-    formatoFull = formatoFull.join('');
-    if (config.hora) {
-      return formatoFull + '. ' + hora + ':' + minutos;
-    } else {
-      return formatoFull;
-    }
-  }
-
+  //EXtended Functions
   $.fn.extend({
     touchMov: function(config){
       config = jQuery.extend({
@@ -350,17 +297,77 @@ $(function(){
         content.append(`<div class="diaNum ${hoy == index ? 'activo':''}">${index}</div>`);
       }
       return this;
+    },
+    fechaIcono: function(config){
+      config = jQuery.extend({
+        fecha: new Date(),
+        diaCompleto: false
+      }, config);
+      let hoy = config.fecha.getDate();
+      let dia = globalState.dateTime.dias[config.fecha.getDay()];
+      this.append(`<div class="fechaWrapper"><p class="diaNom">${config.diaCompleto ? dia : dia.substring(0, 3)}</p><p class="diaNum">${hoy}</p></div>`)
+
+      return this;
+    },
+    reloj: function(){
+      let tiempo = new Date();
+      let numeros = '';
+      for (let index = 1; index <= 12; index++) {
+        numeros += `<div class="numero" data-num="${index}"></div>`;
+      }
+      let transformHora = `calc(${(360 / 12 - 360) * tiempo.getHours()}deg + ${(30 / 60) * tiempo.getMinutes()}deg)`;
+      let transformMinutos = `calc(6deg * ${tiempo.getMinutes()} + ${(6 / 60) * tiempo.getSeconds()}deg)`;
+      let transformSegundos = `calc(6deg * ${tiempo.getSeconds()})`;
+      this.append(
+        `<div class="relojWrapper">
+          <div class="reloj">
+            <div class="numeros">${numeros}</div>
+            <div class="manecillas">
+              <div class="manecilla hora" style="transform: rotate(${transformHora});"><div class="barra"></div></div>
+              <div class="manecilla minutos" style="transform: rotate(${transformMinutos});"><div class="barra"></div></div>
+              <div class="manecilla segundos" style="transform: rotate(${transformSegundos});"><div class="barra"></div></div>
+            </div>
+          </div>
+        </div>`
+      );
+      return this;
+    },
+    hora: function(config) {
+      config = jQuery.extend({
+        realtime: true
+      }, config);
+      var hoy = new Date();
+      var hora = hoy.getHours();
+      if (hora < 10) hora = '0' + hora;
+      var minutos = hoy.getMinutes();
+      if (minutos < 10) minutos = '0' + minutos;
+      if (config.realtime) {
+        setInterval(() => {
+          hoy = new Date();
+          hora = hoy.getHours();
+          if (hora < 10) hora = '0' + hora;
+          minutos = hoy.getMinutes();
+          if (minutos < 10) minutos = '0' + minutos;
+          this.empty();
+          this.append(`<div class="hora">${hora}:${minutos}</div>`);
+        }, 1000);
+      }
+      this.append(`<div class="hora">${hora}:${minutos}</div>`);
+      return this;
     }
   })
   
-  
+  //Functions
   function pintarApps(apps, container, containerDots){
     globalState.wrapperApps.grupos = Math.ceil(apps.length / globalState.wrapperApps.appsGrupo);
     let appCount = 1;
     let html = '';
     apps.map((app) => {
       if (appCount == 1) html += '<div class="grupo">';
-      html += `<div class="app ${app.type == 'widgetFull' ? 'widgetFull':''}" data-app="${app.type+app.nombre}">
+      let clases = 'app';
+      if (app.type == 'widgetFull') clases = clases + ' widgetFull';
+      if (app.dinamico && app.type == 'app') clases = `${clases} ${app.nombre.toLowerCase()}Dinamico`;
+      html += `<div class="${clases}" data-app="${app.type+app.nombre}">
                 <div class="icono" style="${!app.dinamico ? `background-image:url(${app.icono});` : 'background-color:#fff;'}"></div>
                 <p class="nombre">${app.nombre}</p>
       </div>`;
@@ -380,9 +387,23 @@ $(function(){
   }
 
   pintarApps(globalState.apps, $('.wrapperApps'), $('.wrapperDots'));
-  
   $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono').append('<div class="eventos"><p>Sin más eventos para hoy</p></div><div class="calendarioWrapper"></div>');
   $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono .calendarioWrapper').calendario();
+  $('.wrapperApps .app.calendarioDinamico .icono').fechaIcono();
+  $('.wrapperApps .app.relojDinamico .icono').reloj();
+  $('.statusBar .wrapperHora').hora();
+  $('.lockScreen .lockHora').hora();
+
+  //Touch actions
+  $('.lockScreen').touchMov({
+    mov: 'y',
+    movUp: function(e){
+      console.log(e.currentTarget);
+      $(e.currentTarget).addClass('hidden');
+      $(e.currentTarget).siblings('.appScreen.hidden').removeClass('hidden');
+    }
+  });
+
   $('.wrapperApps').touchMov({
     updateMovX: function(e, mov){
       $(e.currentTarget).css({
@@ -429,6 +450,4 @@ $(function(){
       globalState.wrapperApps.transform = transform;
     }
   });
-
-
 })

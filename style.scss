@@ -24,6 +24,11 @@ $grayDark: #1b1b1b;
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
+@keyframes relojAnalogico{
+  to{transform: rotate(360deg)}
+}
+
+
 body{
   overflow-x: hidden;
   color: #666;
@@ -44,8 +49,6 @@ body{
     list-style-type: none;
   }
 }
-
-
 
 .iphoneMock{
   @include flex;
@@ -241,6 +244,7 @@ body{
             border-radius: 32px;
             background-color: $blanco;
             position: relative;
+            overflow: hidden;
             .statusBar{
               @include flex($jc: space-between);
               height: 20px;
@@ -395,12 +399,17 @@ body{
             }
             .lockScreen{
               @include flex(column, $jc: space-between);
-              display: none;
               position: absolute;
               width: 100%;
               height: calc(100% - 25px);
               padding: 30px;
               box-sizing: border-box;
+              transition: ease all .4s;
+              &.hidden{
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-50%);
+              }
               &:hover{
                 .unlockBar{
                   opacity: 1;
@@ -497,6 +506,12 @@ body{
               height: calc(100% - 25px);
               padding: 10px;
               box-sizing: border-box;
+              transition: ease all .4s;
+              &.hidden{
+                opacity: 0;
+                visibility: hidden;
+                transform: scale(1.5);
+              }
               .app{
                 width: 64px;
                 .icono{
@@ -506,6 +521,7 @@ body{
                   margin: 3px auto;
                   border-radius: 10px;
                   background-color: $blanco;
+                  overflow: hidden;
                 }
                 .nombre{
                   height: 13px;
@@ -586,6 +602,134 @@ body{
                                     background-color: #d24f54;
                                     border-radius: 50%;
                                   }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                    &.calendarioDinamico{
+                      .fechaWrapper{
+                        @include flex(column);
+                        width: 100%;
+                        height: 100%;
+                        padding: 5px;
+                        box-sizing: border-box;
+                        .diaNom{
+                          color: #d24f54;
+                          font-size: 10px;
+                          font-weight: 600;
+                          letter-spacing: 1px;
+                          text-transform: uppercase;
+                        }
+                        .diaNum{
+                          color: $negro;
+                          font-size: 22px;
+                          font-weight: 300;
+                        }
+                      }
+                    }
+                    &.relojDinamico{
+                      .relojWrapper{
+                        @include flex;
+                        width: 100%;
+                        height: 100%;
+                        padding: 3px;
+                        background-color: $negro;
+                        box-sizing: border-box;
+                        .reloj{
+                          width: 100%;
+                          height: 100%;
+                          border-radius: 50%;
+                          background-color: $blanco;
+                          position: relative;
+                          overflow: hidden;
+                          .numeros{
+                            .numero{
+                              position: absolute;
+                              bottom: 50%;
+                              left: 0;
+                              right: 0;
+                              margin: auto;
+                              width: 10px;
+                              height: calc(50% - 1px);
+                              color: $negro;
+                              font-size: 5px;
+                              font-weight: 600;
+                              text-align: center;
+                              transform-origin: bottom;
+                              @for $i from 1 through 12{
+                                &:nth-child(#{$i}){
+                                  transform: rotate((360deg / 12) * $i);
+                                  &:before{
+                                    transform: rotate((360deg / 12) * -$i);
+                                  }
+                                }
+                              }
+                              &:before{
+                                content: attr(data-num);
+                                display: block;
+                              }
+                            }
+                          }
+                          .manecillas{
+                            &:before{
+                              content: "";
+                              position: absolute;
+                              top: 0;
+                              left: 0;
+                              right: 0;
+                              bottom: 0;
+                              margin: auto;
+                              width: 3px;
+                              height: 3px;
+                              border-radius: 50%;
+                              background-color: $negro;
+                            }
+                            .manecilla{
+                              position: absolute;
+                              width: 100%;
+                              height: 100%;
+                              &.hora{
+                                .barra{
+                                  animation-duration: 21600s;
+                                  &:before{
+                                    height: calc(50% - 10px);
+                                  }
+                                }
+                              }
+                              &.minutos{
+                                .barra{
+                                  animation-duration: 3600s;
+                                }
+                              }
+                              &.segundos{
+                                .barra{
+                                  &:before{
+                                    background-color: #d24f54;
+                                    bottom: 40%;
+                                    height: calc(60% - 4px);
+                                    animation-duration: 60s;
+                                    animation-timing-function: steps(60);
+                                  }
+                                }
+                              }
+                              .barra{
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                animation: relojAnalogico 60s infinite linear;
+                                &:before{
+                                  content: "";
+                                  position: absolute;
+                                  bottom: 50%;
+                                  left: 0;
+                                  right: 0;
+                                  margin: auto;
+                                  width: 1px;
+                                  height: calc(50% - 4px);
+                                  background-color: $negro;
                                 }
                               }
                             }
