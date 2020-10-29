@@ -27,6 +27,14 @@ $grayDark: #1b1b1b;
 @keyframes relojAnalogico{
   to{transform: rotate(360deg)}
 }
+@keyframes shake{
+  0%{transform: rotate(-2deg);}
+  100%{transform: rotate(2deg);}
+}
+@keyframes shake-2{
+  0%{transform: rotate(-1deg);}
+  100%{transform: rotate(1deg);}
+}
 
 
 body{
@@ -49,6 +57,243 @@ body{
     list-style-type: none;
   }
 }
+
+#fixedApp{
+  position: fixed;
+  &.widgetFull{
+    height: calc(76px * 2);
+    .icono{
+      width: 236px;
+      height: calc(100% - 26px);
+    }
+  }
+  &[data-app="widgetFullCalendario"]{
+    .icono{
+      @include flex;
+      padding: 10px;
+      box-sizing: border-box;
+      .eventos{
+        width: calc(100% - 112px);
+        font-size: 12px;
+      }
+      .calendarioWrapper{
+        width: 112px;
+        .mes{
+          .mesName{
+            color: #d24f54;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+          }
+          .calendarioTabla{
+            .tablaHeader, .tablaContent{
+              @include flex($jc: flex-start);
+              >*{
+                width: 16px;
+                text-align: center;
+                font-size: 8px;
+                font-weight: 600;
+              }
+            }
+            .tablaHeader{
+              margin: 5px auto;
+            }
+            .tablaContent{
+              .diaNum{
+                @include flex;
+                height: 16px;
+                &.activo{
+                  color: $blanco;
+                  background-color: #d24f54;
+                  border-radius: 50%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  &.calendarioDinamico{
+    .fechaWrapper{
+      @include flex(column);
+      width: 100%;
+      height: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+      .diaNom{
+        color: #d24f54;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .diaNum{
+        color: $negro;
+        font-size: 22px;
+        font-weight: 300;
+      }
+    }
+  }
+  &.relojDinamico{
+    .relojWrapper{
+      @include flex;
+      width: 100%;
+      height: 100%;
+      padding: 3px;
+      background-color: $negro;
+      box-sizing: border-box;
+      .reloj{
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: $blanco;
+        position: relative;
+        overflow: hidden;
+        .numeros{
+          .numero{
+            position: absolute;
+            bottom: 50%;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 10px;
+            height: calc(50% - 1px);
+            color: $negro;
+            font-size: 5px;
+            font-weight: 600;
+            text-align: center;
+            transform-origin: bottom;
+            @for $i from 1 through 12{
+              &:nth-child(#{$i}){
+                transform: rotate((360deg / 12) * $i);
+                &:before{
+                  transform: rotate((360deg / 12) * -$i);
+                }
+              }
+            }
+            &:before{
+              content: attr(data-num);
+              display: block;
+            }
+          }
+        }
+        .manecillas{
+          &:before{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background-color: $negro;
+          }
+          .manecilla{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            &.hora{
+              .barra{
+                animation-duration: 21600s;
+                &:before{
+                  height: calc(50% - 10px);
+                }
+              }
+            }
+            &.minutos{
+              .barra{
+                animation-duration: 3600s;
+              }
+            }
+            &.segundos{
+              .barra{
+                &:before{
+                  background-color: #d24f54;
+                  bottom: 40%;
+                  height: calc(60% - 4px);
+                  animation-duration: 60s;
+                  animation-timing-function: steps(60);
+                }
+              }
+            }
+            .barra{
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              animation: relojAnalogico 60s infinite linear;
+              &:before{
+                content: "";
+                position: absolute;
+                bottom: 50%;
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: 1px;
+                height: calc(50% - 4px);
+                background-color: $negro;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .icono{
+    @include imagen;
+    width: 50px;
+    height: 50px;
+    margin: 3px auto;
+    border-radius: 10px;
+    background-color: $blanco;
+    overflow: hidden;
+  }
+  .nombre, .notificacion{
+    display: none;
+  }
+}
+.fixedMenuFixedApp{
+  position: fixed;
+    top: 413px;
+    left: 300px;
+    border-radius: 15px;
+  background-color: rgba($blanco,.8);
+  .menuOption{
+    @include flex($jc: space-between);
+    padding: 7px 20px;
+    font-size: 12px;
+    color: $negro;
+    box-sizing: border-box;
+    &.eliminar{
+      color: red;
+    }
+    &:not(:last-child){
+      border-bottom: 1px solid rgba($negro,.1);
+    }
+    .icono{
+      width: 18px;
+      height: 18px;
+      margin-left: 10px;
+      svg{
+        width: 100%;
+        height: 100%;
+        path, circle{
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 2;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+      }
+    }
+  }
+}
+
+
 
 .iphoneMock{
   @include flex;
@@ -155,6 +400,16 @@ body{
           border-radius: 40px;
           background-color: $negro;
           position: relative;
+          &:after{
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 40px;
+            border: 7px solid $negro;
+            box-sizing: border-box;
+            pointer-events: none;
+          }
           .notch{
             @include flex;
             position: absolute;
@@ -238,13 +493,60 @@ body{
             }
           }
           .mainScreen{
-            @include imagen;
+            @include imagen('./wallpaper.jpg');
             width: calc(100% - 14px);
             height: calc(100% - 14px);
             border-radius: 32px;
             background-color: $blanco;
+            background-color: transparent;
+            background-blend-mode: soft-light;
             position: relative;
             overflow: hidden;
+            transition: ease all 1s;
+            &.blur{
+              background-image: url(./wallpaperBlur.jpg);
+              transition-duration: .5s;
+            }
+            &.filterBlur{
+              background-color: rgb($negro,.2);
+              filter: blur(5px);
+              pointer-events: none;
+              transition-duration: .2s;
+              .appScreen{
+                transform: scale(.9);
+                transition-duration: .2s;
+              }
+            }
+            &.shakingApps{
+              .appScreen{
+                .app{
+                  animation: shake .1s linear alternate infinite;
+                  &.widgetFull{
+                    animation: shake-2 .1s linear alternate infinite;
+                  }
+                }
+              }
+              .statusBar{
+                .leftSide, .rightSide{
+                  .operador, .hora, .signal, .datos, .bateria{
+                    opacity: 0;
+                  }
+                  .widgetPlus, .exitShake{
+                    transform: scale(1);
+                  }
+                }
+              }
+              .appScreen{
+                .wrapperDots{
+                  padding: 3px 10px;
+                  border-radius: 20px;
+                  background-color: rgb($blanco,.5);
+                  .dot{
+                    background-color: rgba($negro,.3);
+                  }
+                }
+              }
+            }
             .statusBar{
               @include flex($jc: space-between);
               height: 20px;
@@ -258,14 +560,40 @@ body{
                 color: $blanco;
                 font-size: 10px;
                 text-transform: uppercase;
+                position: relative;
                 >*{
                   &.hidden{
                     display: none;
                   }
                 }
+                .widgetPlus{
+                  @include flex;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 40px;
+                  height: 17px;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.5);
+                  transform: scale(0);
+                  overflow: hidden;
+                  cursor: pointer;
+                  transition: ease all .2s;
+                  &:before, &:after{
+                    position: absolute;
+                    content: "";
+                    width: 8px;
+                    height: 1px;
+                    background-color: rgba($negro, .5);
+                  }
+                  &:after{
+                    transform: rotate(90deg);
+                  }
+                }
               }
               .rightSide{
                 @include flex($jc: flex-end);
+                position: relative;
                 .signal{
                   @include flex;
                   width: 18px;
@@ -404,6 +732,22 @@ body{
                     max-width: calc(100% - 2px);
                   }
                 }
+                .exitShake{
+                  @include flex;
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  width: 40px;
+                  height: 17px;
+                  font-size: 10px;
+                  font-weight: 600;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.5);
+                  transform: scale(0);
+                  overflow: hidden;
+                  cursor: pointer;
+                  transition: ease all .2s;
+                }
               }
             }
             .lockScreen{
@@ -527,6 +871,32 @@ body{
               }
               .app{
                 width: 64px;
+                position: relative;
+                .notificacion, .removeApp{
+                  @include flex;
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  width: 18px;
+                  height: 18px;
+                  color: $blanco;
+                  font-size: 10px;
+                  border-radius: 50%;
+                  background-color: #de4046;
+                }
+                .removeApp{
+                  left: 0;
+                  right: auto;
+                  background-color: #e6f2ff;
+                  cursor: pointer;
+                  &:after{
+                    content: "";
+                    position: absolute;
+                    width: 50%;
+                    height: 1px;
+                    background-color: rgba($negro,.5);
+                  }
+                }
                 .icono{
                   @include imagen;
                   width: 50px;
@@ -776,23 +1146,211 @@ body{
               }
             }
             .widgetCenter{
-              @include flex(column, $jc: space-between);
+              @include flex(column, $jc: flex-start);
               position: absolute;
               width: 100%;
               height: calc(100% - 25px);
               padding: 10px;
               box-sizing: border-box;
-              backdrop-filter: blur(5px);
-              transition: ease all .3s;
+              transition: ease all .2s;
               &.hidden{
                 transform: translateX(-100%);
               }
               .buscador{
+                @include flex;
                 width: 100%;
                 height: 35px;
+                color: $blanco;
+                font-size: 14px;
                 border-radius: 10px;
                 margin: 10px auto 30px auto;
                 background-color: rgba($blanco,.5);
+                .icono{
+                  width: 15px;
+                  height: 15px;
+                  margin-right: 7px;
+                  position: relative;
+                  &:before, &:after{
+                    content: "";
+                    position: absolute;
+                  }
+                  &:before{
+                    top: 0;
+                    left: 0;
+                    width: 13px;
+                    height: 13px;
+                    border-radius: 50%;
+                    border: 1px solid $blanco;
+                    box-sizing: border-box;
+                  }
+                  &:after{
+                    bottom: 0;
+                    right: 0;
+                    width: 1px;
+                    height: 5px;
+                    background-color: $blanco;
+                    transform: rotate(-45deg);
+                    transform-origin: bottom left;
+                  }
+                }
+              }
+              .contenido{
+                @include flex($ai: stretch, $jc: space-between);
+                width: 100%;
+                .block{
+                  @include flex;
+                  width: 100%;
+                  padding: 10px;
+                  border-radius: 15px;
+                  box-sizing: border-box;
+                  background-color: rgba($blanco,.5);
+                  &:not(:first-child){
+                    margin-top: 15px;
+                  }
+                  &.midd{
+                    width: 48%;
+                  }
+                }
+                .actions{
+                  .action{
+                    @include flex;
+                    width: 100%;
+                    padding: 10px 0;
+                    border-bottom: 1px solid rgba($negro,.1);
+                    &:first-child{
+                      padding-top: 0;
+                    }
+                    &:last-child{
+                      padding-bottom: 0;
+                      border: 0;
+                    }
+                    .icono{
+                      @include imagen;
+                      width: 40px;
+                      height: 40px;
+                      margin-right: 5px;
+                      border-radius: 10px;
+                      background-color: $blanco;
+                    }
+                    .textos{
+                      width: calc(100% - 45px);
+                      p{
+                        font-size: 10px;
+                        &.actionName{
+                          color: $negro;
+                          font-size: 11px;
+                          font-weight: 600;
+                        }
+                      }
+                    }
+                  }
+                }
+                .eventos{
+                  flex-direction: column-reverse;
+                  align-items: flex-start;
+                  background-color: $blanco;
+                  .txt{
+                    padding: 15px 0;
+                    font-size: 12px;
+                  }
+                  .fechaWrapper{
+                    .diaNom{
+                      color: #d24f54;
+                      font-size: 10px;
+                      font-weight: 600;
+                      letter-spacing: 1px;
+                      text-transform: uppercase;
+                    }
+                    .diaNum{
+                      color: $negro;
+                      font-size: 22px;
+                      font-weight: 300;
+                    }
+                  }
+                }
+                .bateriaInfo{
+                  flex-direction: column;
+                  align-items: flex-start;
+                  align-content: flex-start;
+                  &:after{
+                    content: attr(data-carga)'%';
+                    color: $negro;
+                    font-size: 30px;
+                  }
+                  .iconoWrapper{
+                    @include flex;
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 50%;
+                    margin-bottom: 20px;
+                    border: 3px solid rgba($negro, .3);
+                    position: relative;
+                    &:after{
+                      content: "";
+                      position: absolute;
+                      width: 100%;
+                      height: 100%;
+                      border-radius: 50%;
+                      border: 3px solid #67ba6e;
+                      border-left-color: transparent;
+                      border-top-color: transparent;
+                      transform: rotate(-35deg);
+                    }
+                    svg{
+                      width: 20px;
+                      height: 20px;
+                      path, circle{
+                        fill: none;
+                        stroke: $grayDark;
+                        stroke-width: 2;
+                        stroke-linecap: round;
+                        stroke-linejoin: round;
+                      }
+                    }
+                  }
+                }
+                .tiempoPantalla{
+                  justify-content: space-between;
+                  background-color: $blanco;
+                  .timepo{
+                    width: 100%;
+                    color: $negro;
+                    font-size: 20px;
+                    text-align: left;
+                  }
+                  .app{
+                    @include flex;
+                    width: 48%;
+                    margin-top: 10px;
+                    .icono{
+                      @include imagen;
+                      width: 30px;
+                      height: 30px;
+                      margin-right: 5px;
+                      border-radius: 7px;
+                      background-color: $blanco;
+                    }
+                    .textos{
+                      width: calc(100% - 35px);
+                      p{
+                        font-size: 10px;
+                        color: rgba($negro,.3);
+                        &.actionName{
+                          color: $negro;
+                          font-size: 11px;
+                        }
+                      }
+                    }
+                  }
+                }
+                .editButton{
+                  margin: 20px auto 0 auto;
+                  padding: 4px 12px;
+                  color: $negro;
+                  font-size: 12px;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.5);
+                }
               }
             }
           }
