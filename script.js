@@ -386,15 +386,17 @@ $(function(){
   
   //Functions
   function pintarApps(apps, container, containerDots){
+    container.empty();
+    containerDots.empty();
     globalState.wrapperApps.grupos = Math.ceil(apps.length / globalState.wrapperApps.appsGrupo);
     let appCount = 1;
     let html = '';
-    apps.map((app) => {
+    apps.map((app, idArr) => {
       if (appCount == 1) html += '<div class="grupo">';
       let clases = 'app';
       if (app.type == 'widgetFull') clases = clases + ' widgetFull';
       if (app.dinamico && app.type == 'app') clases = `${clases} ${app.nombre.toLowerCase()}Dinamico`;
-      html += `<div class="${clases}" data-app="${app.type+app.nombre}">
+      html += `<div class="${clases}" data-app="${app.type + app.nombre}" data-id="${idArr}">
                 ${app.notificaciones ? `<div class="notificacion">${app.notificaciones}</div>` : ''}
                 <div class="icono" style="${!app.dinamico ? `background-image:url(${app.icono});` : 'background-color:#fff;'}"></div>
                 <p class="nombre">${app.nombre}</p>
@@ -413,17 +415,100 @@ $(function(){
     }
     container.append(html);
   }
+  function alertaiOS(config) {
+    config = jQuery.extend({
+      wrapper: $('.iphone .bordeNegro'),
+      acciones: [
+        {
+          texto: 'Aceptar',
+          warning: true,
+          // callback: function(){console.log('callback aceptar')}
+        },
+        {
+          texto: 'Cancelar',
+          warning: false,
+          // callback: function () { console.log('callback cancelar') }
+        }
+      ],
+      closable: false,
+      closeOnActions: true,
+      encabezado: 'Encabezado de la modal',
+      mensaje: 'Mensaje de la modal...',
+      ocultar: false
+    }, config);
+    var acciones = '';
+    if (config.acciones) {
+      $.each(config.acciones, function (k, accion) {
+        acciones += `<div class="accion ${accion.warning ? 'warning':''}">${accion.texto}</div>`;
+      })
+    }
+    if (config.ocultar) {
+      $(document).off('click', '#iOSAlert .accion');
+      $('#iOSAlert').fadeOut(function () { $(this).remove() });
+      return false;
+    }
+    if ($('#iOSAlert').length == 0) {
+      config.wrapper.append(`
+      <div id="iOSAlert">
+        <div class="contenedor hidAnim">
+          <p class="encabezado">${config.encabezado}</p>
+          <p class="mensaje">${config.mensaje}</p>
+          <div class="acciones">${acciones}</div>
+        </div>
+      </div>
+    `);
+      if (config.closable) $('#iOSAlert').prepend('<div class="closable"></div>');
+      $('#iOSAlert').fadeIn('fast', function () {
+        $(this).children('.contenedor').removeClass('hidAnim');
+      }).css('display', 'flex');
+      $(document).on('click', '#iOSAlert .accion', function (e) {
+        let accion = config.acciones[$(e.currentTarget).index()];
+        if (accion.callback && (typeof accion.callback == 'function')) {
+          accion.callback(e);
+        }
+        if (config.closeOnActions) {
+          $(document).off('click', '#iOSAlert .accion');
+          $('#iOSAlert').fadeOut('fast', function () { $(this).remove() });
+        }
+      })
+      if (config.hasOwnProperty('autoclose')) {
+        setTimeout(function () {
+          $(document).off('click', '#iOSAlert .accion');
+          $('#iOSAlert').fadeOut('fast', function () { $(this).remove() });
+        }, config.autoclose)
+      }
+    } else {
+      $(document).off('click', '#iOSAlert .accion');
+    }
+    $(document).on('click', '#iOSAlert .closable', function () {
+      $(document).off('click', '#iOSAlert .accion');
+      $('#iOSAlert').fadeOut('fast', function () { $(this).remove() });
+    })
+  }
+  function renderizarUI(){
+    //Pintamos todas las apps en el contenedor principal
+    pintarApps(globalState.apps, $('.wrapperApps'), $('.wrapperDots'));
+    //Si existe el widget del calendario
+    if ($('.wrapperApps .app[data-app="widgetFullCalendario"]').length) {
+      //Preparamos el widget del calendario
+      $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono').append('<div class="eventos"><p>Sin más eventos para hoy</p></div><div class="calendarioWrapper"></div>');
+      //Creamos el calendario del widget
+      $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono .calendarioWrapper').calendario();
+    }
+    //Si existe el icono dinamico del calendario
+    if ($('.wrapperApps .app.calendarioDinamico').length) {
+      //Icono dinamico del calendario
+      $('.wrapperApps .app.calendarioDinamico .icono').fechaIcono();
+    }
+    //Si existe el reloj analogico dinamico
+    if ($('.wrapperApps .app.relojDinamico').length) {
+      //Reloj analogico dinamico
+      $('.wrapperApps .app.relojDinamico .icono').reloj();
+    }
+  }
 
-  //Pintamos todas las apps en el contenedor principal
-  pintarApps(globalState.apps, $('.wrapperApps'), $('.wrapperDots'));
-  //Preparamos el widget del calendario
-  $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono').append('<div class="eventos"><p>Sin más eventos para hoy</p></div><div class="calendarioWrapper"></div>');
-  //Creamos el calendario del widget
-  $('.wrapperApps .app[data-app="widgetFullCalendario"] .icono .calendarioWrapper').calendario();
-  //Icono dinamico del calendario
-  $('.wrapperApps .app.calendarioDinamico .icono').fechaIcono();
-  //Reloj analogico dinamico
-  $('.wrapperApps .app.relojDinamico .icono').reloj();
+
+  renderizarUI();
   //Hora de la statusBar
   $('.statusBar .hora').hora();
   //Hora de la pantalla de bloqueo
@@ -521,12 +606,32 @@ $(function(){
       }, 200)
     }
   });
-  //Mostrar icono para eliminar apps (shaking apps)
+  $('.widgetScreen .wrapper').touchMov({
+    mov: 'y',
+    movDown: function(e) {
+      $(e.currentTarget).parents('.mainScreen').removeClass('widgetScreenOpen');
+      $(e.currentTarget).parent().addClass('hidden');
+      setTimeout(() => {
+        $(e.currentTarget).removeAttr('style');
+      }, 200)
+    },
+    updateMovY: function (e, mov) {
+      if (Math.sign(mov) == 1) {
+        $(e.currentTarget).css({
+          transform: `translateY(${mov}px)`,
+          transition: 'none'
+        });
+      }
+    }
+  });
+  
+  //Menu flotante al presionar app por 1 segundo
   $('.mainScreen .appScreen').mousedown(function(e){
     e.stopPropagation();
     if ($(this).parent().hasClass('shakingApps')) return false;
     let timeout = setTimeout(() => {
       if ($(e.target).hasClass('app') || $(e.target).parents('.app').length) {
+        //Dio click en una app. Ok, le mostraremos el menu flotante
         $(this).parent().addClass('filterBlur');
         let app;
         if ($(e.target).hasClass('app')) {
@@ -536,16 +641,22 @@ $(function(){
         }
         let appClon = app.clone();
         appClon.attr('id', 'fixedApp');
-        console.log(app);
-        console.log(app[0].getBoundingClientRect());
         appClon.css({
           top: app[0].getBoundingClientRect().top,
           left: app[0].getBoundingClientRect().left,
           width: app[0].getBoundingClientRect().width
         })
         $('body').append(appClon);
+        let rectsIphone = $('.iphone .bordeNegro')[0].getBoundingClientRect();
+        let rectsApp = appClon.children('.icono')[0].getBoundingClientRect();
+        let cssMenu = `left: ${((rectsIphone.x + rectsIphone.width) - rectsApp.x) >= 190 ? rectsApp.x : (rectsApp.x + rectsApp.width) - 190}px;`;
+        if ((rectsIphone.top + (65 * 2)) >= rectsApp.top) {
+          cssMenu += `top : ${rectsApp.y + rectsApp.height}px; transform: translateY(10px)`;
+        } else {
+          cssMenu += `top: ${rectsApp.y}px; transform: translateY(calc(-100% - 10px));`;
+        }
         $('body').append(`
-          <div class="fixedMenuFixedApp">
+          <div class="fixedMenuFixedApp" style="${cssMenu}">
             <div class="menuOption eliminar">Eliminar app
               <div class="icono">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -554,7 +665,7 @@ $(function(){
                 </svg>
               </div>
             </div>
-            <div class="menuOption">Editar pantalla de inicio
+            <div class="menuOption shaking">Editar pantalla de inicio
               <div class="icono">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
                   <path d="M14 59a3 3 0 0 0 3 3h30a3 3 0 0 0 3-3v-9H14zM50 5a3 3 0 0 0-3-3H17a3 3 0 0 0-3 3v5h36zm0 45V10m-36 0v40"></path>
@@ -565,6 +676,7 @@ $(function(){
           </div>
         `);
       } else {
+        //Dio click en cualquier parte del appScreen. Ok, es hora del shaking apps
         $(this).parent().addClass('shakingApps');
         $('.appScreen .app').append('<div class="removeApp"></div>');
       }
@@ -573,10 +685,92 @@ $(function(){
       clearTimeout(timeout);
     })
   })
+  //Shaking apps desde el menu flotante de la app
+  $('body').on('click', '.fixedMenuFixedApp .menuOption.shaking', function(){
+    $(this).parent().remove();
+    $('#fixedApp').remove();
+    $('.mainScreen').removeClass('filterBlur').addClass('shakingApps');
+    $('.appScreen .app').append('<div class="removeApp"></div>');
+  })
   //Salir del eliminador de apps (shaking apps)
   $('.exitShake').click(function(){
     $('.mainScreen').removeClass('shakingApps');
     $('.appScreen .app .removeApp').remove();
   })
+  //Mostrar la widgetScreen
+  $('.widgetPlus').click(function(){
+    $('.widgetScreen').removeClass('hidden');
+    $('.appScreen .app .removeApp').remove();
+    $('.mainScreen').removeClass('shakingApps').addClass('widgetScreenOpen');
+  })
+  //Eliminar app
+  $('body').on('click', '.fixedMenuFixedApp .menuOption.eliminar', function () {
+    let idApp = $('#fixedApp').data('id');
+    if (!idApp) {
+      var idDeck = $('#fixedApp').data('indeck');
+    }
+    $(this).parent().remove();
+    $('#fixedApp').remove();
+    $('.mainScreen').removeClass('filterBlur');
+    alertaiOS({
+      encabezado: `¿Transferir ${idApp ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
+      mensaje: 'Transferir la app la quitará de tu pantalla de inicio conservando todos los datos',
+      acciones: [
+        {
+          texto: 'Eliminar app',
+          warning: true,
+          callback: function(){
+            if (idApp) {
+              globalState.apps.splice(idApp, 1);
+              renderizarUI();
+            } else if (idDeck) {
+              $('.deckApps .app[data-indeck="'+ idDeck +'"]').remove();
+            }
+          }
+        },
+        {
+          texto: 'Transferir a la biblioteca de apps',
+          callback: function () { console.log('Biblioteca de apps pendiente') }
+        },
+        {
+          texto: 'Cancelar'
+        },
+      ]
+    });
+  })
+  $('.appScreen').on('click', '.app .removeApp', function () {
+    let idApp = $(this).parent('.app').data('id');
+    if (!idApp) {
+      var idDeck = $(this).parent('.app').data('indeck');
+    }
+    $('.appScreen .app .removeApp').remove();
+    $('.mainScreen').removeClass('shakingApps');
+    alertaiOS({
+      encabezado: `¿Transferir ${idApp ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
+      mensaje: 'Transferir la app la quitará de tu pantalla de inicio conservando todos los datos',
+      acciones: [
+        {
+          texto: 'Eliminar app',
+          warning: true,
+          callback: function () {
+            if (idApp) {
+              globalState.apps.splice(idApp, 1);
+              renderizarUI();
+            } else if (idDeck) {
+              $('.deckApps .app[data-indeck="' + idDeck + '"]').remove();
+            }
+          }
+        },
+        {
+          texto: 'Transferir a la biblioteca de apps',
+          callback: function () { console.log('Biblioteca de apps pendiente') }
+        },
+        {
+          texto: 'Cancelar'
+        },
+      ]
+    });
+  })
+
 
 })
