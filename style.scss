@@ -35,6 +35,16 @@ $grayDark: #1b1b1b;
   0%{transform: rotate(-1deg);}
   100%{transform: rotate(1deg);}
 }
+@keyframes grabarPantalla{
+  0%{
+    opacity: 1;
+    transform: scale(1);
+  }
+  100%{
+    opacity: 0;
+    transform: scale(.9);
+  }
+}
 
 
 body{
@@ -268,6 +278,7 @@ body{
     padding: 7px 15px;
     font-size: 12px;
     color: $negro;
+    cursor: pointer;
     box-sizing: border-box;
     &.eliminar{
       color: red;
@@ -617,6 +628,7 @@ body{
               border-radius: 10px;
               margin: 10px auto 30px auto;
               background-color: rgba($blanco,.5);
+              cursor: not-allowed;
               .icono{
                 width: 15px;
                 height: 15px;
@@ -652,6 +664,25 @@ body{
               padding: 5px 20px 0px 20px;
               padding-right: 12px;
               transition: ease all .1s;
+              position: relative;
+              cursor: grab;
+              &.camActiv, &.micActiv{
+                &:after{
+                  content: "";
+                  position: absolute;
+                  top: 7px;
+                  right: 60px;
+                  width: 5px;
+                  height: 5px;
+                  border-radius: 50%;
+                  background-color: #00dc54;
+                }
+              }
+              &.micActiv{
+                &:after{
+                  background-color: #ff8e00;
+                }
+              }
               &.mov{
                 transform: translateY(-100%);
               }
@@ -856,6 +887,7 @@ body{
               height: calc(100% - 25px);
               padding: 30px;
               box-sizing: border-box;
+              cursor: grab;
               transition: ease all .4s;
               &.hidden{
                 opacity: 0;
@@ -958,6 +990,7 @@ body{
               height: calc(100% - 25px);
               padding: 10px;
               box-sizing: border-box;
+              cursor: grab;
               transition: ease all .4s;
               &.moveOut{
                 transition-duration: .2s;
@@ -971,6 +1004,7 @@ body{
               .app{
                 width: 64px;
                 position: relative;
+                cursor: pointer;
                 .notificacion, .removeApp{
                   @include flex;
                   position: absolute;
@@ -1251,6 +1285,7 @@ body{
               height: calc(100% - 25px);
               padding: 10px;
               box-sizing: border-box;
+              cursor: grab;
               transition: ease all .2s;
               &.hidden{
                 transform: translateX(-100%);
@@ -1411,6 +1446,7 @@ body{
                   font-size: 12px;
                   border-radius: 20px;
                   background-color: rgba($blanco,.5);
+                  cursor: not-allowed;
                 }
               }
             }
@@ -1487,6 +1523,296 @@ body{
                       text-align: center;
                     }
                   }
+                }
+              }
+            }
+            .controlCenter{
+              @include flex;
+              position: absolute;
+              top: 0;
+              width: 100%;
+              height: 100%;
+              backdrop-filter: blur(15px);
+              cursor: grab;
+              transition: cubic-bezier(0.68, -0.55, 0.27, 1.55) all .5s;
+              &.hidden{
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateY(-100px);
+              }
+              .content{
+                @include flex($jc: space-between);
+                width: 100%;
+                padding: 10px 20px;
+                box-sizing: border-box;
+                .iconWrapper-wX2{
+                  @include flex($jc: space-between, $ac: space-between);
+                  width: 120px;
+                  height: 120px;
+                  margin-bottom: 20px;
+                  border-radius: 20px;
+                  color: $blanco;
+                  box-sizing: border-box;
+                  &.padding{
+                    padding: 10px;
+                  }
+                }
+                .iconItem{
+                  @include flex;
+                  width: 25px;
+                  height: 25px;
+                  padding: 15px;
+                  margin-bottom: 10px;
+                  border-radius: 15px;
+                  background-color: rgba($negro,.5);
+                  position: relative;
+                  cursor: pointer;
+                  &.full{
+                    width: 100%;
+                  }
+                  &.lampara{
+                    &.activo{
+                      background-color: rgba($blanco,.9);
+                      svg{
+                        color: #3777e4;
+                      }
+                    }
+                  }
+                  &.grabarPantalla{
+                    &.activo{
+                      background-color: rgba($blanco,.9);
+                      svg{
+                        color: red;
+                        circle{
+                          &.filled{
+                            transform-origin: center;
+                            animation: grabarPantalla 1s linear infinite;
+                          }
+                        }
+                      }
+                    }
+                  }
+                  svg{
+                    width: 25px;
+                    height: 25px;
+                    min-width: 25px;
+                    color: $blanco;
+                    path, circle, rect{
+                      stroke: currentColor;
+                      fill: none;
+                      stroke-width: 2;
+                      stroke-miterlimit: 10;
+                      &.filled{
+                        stroke: none;
+                        fill: currentColor;
+                      }
+                    }
+                  }
+                }
+                .iconsGroup{
+                  background-color: rgba($negro,.5);
+                  .icon{
+                    cursor: pointer;
+                    margin: 5px;
+                    &.activo{
+                      .ico{
+                        background-color: #3777e4;
+                      }
+                    }
+                    &.modoVuelo{
+                      &.activo{
+                        .ico{
+                          background-color: #ff8e00;
+                        }
+                      }
+                    }
+                    &.datosCelulares{
+                      &.activo{
+                        .ico{
+                          background-color: #00dc54;
+                        }
+                      }
+                    }
+                    .ico{
+                      width: 16px;
+                      height: 16px;
+                      padding: 12px;
+                      border-radius: 50%;
+                      background-color: rgba($blanco,.5);
+                      transition: ease all .3s;
+                      svg{
+                        width: 100%;
+                        height: 100%;
+                        color: $blanco;
+                        path{
+                          fill: currentColor;
+                        }
+                      }
+                    }
+                    .txt{
+                      display: none;
+                    }
+                  }
+                }
+                .musicWdg{
+                  align-content: center;
+                  justify-content: center;
+                  background-color: rgba($negro,.5);
+                  p{
+                    text-align: center;
+                    font-size: 14px;
+                    &.artistName{
+                      font-size: 12px;
+                      color: rgba($blanco,.5);
+                    }
+                  }
+                  .icons{
+                    @include flex($jc: space-between);
+                    width: 100%;
+                    margin-top: 20px;
+                    .icon{
+                      width: 20px;
+                      height: 20px;
+                      svg{
+                        width: 100%;
+                        height: 100%;
+                        path{
+                          fill: currentColor;
+                        }
+                      }
+                    }
+                  }
+                }
+                .displayOptions{
+                  .actionIcon{
+                    transition: ease all .3s;
+                    &.activo{
+                      background-color: rgba($blanco,.9);
+                      &.lockOrientacion{
+                        .lockIcon{
+                          background-color: #d24f54;
+                          &:before{
+                            border-color: #d24f54;
+                          }
+                        }
+                        svg{
+                          color: #d24f54;
+                        }
+                      }
+                    }
+                  }
+                  .lockIcon{
+                    position: absolute;
+                    width: 8px;
+                    height: 6px;
+                    border-radius: 2px;
+                    background-color: $blanco;
+                    margin-right: 2px;
+                    margin-top: 4px;
+                    &:before{
+                      content: "";
+                      position: absolute;
+                      top: -4px;
+                      left: 0;
+                      right: 0;
+                      margin: auto;
+                      width: 2px;
+                      height: 6px;
+                      border-radius: 10px;
+                      border: 2px solid $blanco;
+                    }
+                  }
+                  .moon{
+                    &.activo{
+                      svg{
+                        path{
+                          fill: #7c517c;
+                        }
+                      }
+                    }
+                    svg{
+                      path{
+                        fill: $blanco;
+                      }
+                    }
+                  }
+                  .duplicate{
+                    flex-wrap: nowrap;
+                    p{
+                      font-size: 10px;
+                      margin-left: 10px;
+                    }
+                  }
+                }
+                .fullBars{
+                  .fullBar{
+                    align-content: flex-end;
+                    height: calc(100% - 30px);
+                    overflow: hidden;
+                    cursor: default;
+                    &.volumen{
+                      &:before{
+                        height: 45%;
+                      }
+                    }
+                    &:before{
+                      content: "";
+                      position: absolute;
+                      bottom: 0;
+                      width: 100%;
+                      height: 100%;
+                      background-color: rgba($blanco,.9);
+                    }
+                    svg{
+                      color: rgba($negro,.4);
+                      position: relative;
+                    }
+                  }
+                }
+                .textGroup{
+                  color: $blanco;
+                  font-size: 12px;
+                  text-align: center;
+                  margin-bottom: 20px;
+                  .icono{
+                    width: 25px;
+                    height: 25px;
+                    margin: 10px auto;
+                    color: $blanco;
+                    svg{
+                      width: 100%;
+                      height: 100%;
+                      path, circle{
+                        fill: none;
+                        stroke-width: 2;
+                        stroke: currentColor;
+                        stroke-linecap: round;
+                        stroke-miterlimit: 10;
+                      }
+                    }
+                  }
+                  .link{
+                    display: inline-block;
+                    margin-top: 5px;
+                    color: #3777e4;
+                    cursor: pointer;
+                  }
+                }
+              }
+              .hiddenCC{
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 25px;
+                text-align: center;
+                &:before{
+                  content: "";
+                  display: inline-block;
+                  width: 150px;
+                  height: 4px;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.7);
                 }
               }
             }

@@ -223,7 +223,8 @@ $(function(){
     dateTime: {
       meses: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
       dias: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
-    }
+    },
+    bateriaBaja: false
   }
   //EXtended Functions
   $.fn.extend({
@@ -462,6 +463,7 @@ $(function(){
         $(this).children('.contenedor').removeClass('hidAnim');
       }).css('display', 'flex');
       $(document).on('click', '#iOSAlert .accion', function (e) {
+        console.log(e);
         let accion = config.acciones[$(e.currentTarget).index()];
         if (accion.callback && (typeof accion.callback == 'function')) {
           accion.callback(e);
@@ -504,6 +506,22 @@ $(function(){
     if ($('.wrapperApps .app.relojDinamico').length) {
       //Reloj analogico dinamico
       $('.wrapperApps .app.relojDinamico .icono').reloj();
+    }
+    //Timeout para simular el agotamiento de la bateria
+    if (!globalState.bateriaBaja) {
+      setTimeout(() => {
+        alertaiOS({
+          encabezado: 'La batería se está agotando',
+          mensaje: 'Batería restante: 10%',
+          acciones: [
+            {
+              texto: 'Ok'
+            }
+          ]
+        });
+        $('.mainScreen .statusBar .bateria').removeClass('mid').addClass('low');
+        globalState.bateriaBaja = true;
+      }, 5000);
     }
   }
 
@@ -585,7 +603,7 @@ $(function(){
     mov: 'x',
     movIzq: function (e) {
       $(e.currentTarget).parents('.mainScreen').removeClass('blur');
-      $(e.currentTarget).parent().addClass('hidden');
+      $(e.currentTarget).parent().addClass('hidden').removeAttr('style');
       $(e.currentTarget).parent().siblings('.appScreen.moveOut').removeClass('moveOut');
     },
     updateMovX: function (e, mov) {
@@ -624,7 +642,21 @@ $(function(){
       }
     }
   });
-  
+  $('.statusBar').touchMov({
+    mov: 'y',
+    movDown: function (e) {
+      $(e.currentTarget).parent().addClass('blur');
+      $(e.currentTarget).siblings('.controlCenter.hidden').removeClass('hidden');
+    }
+  });
+  $('.controlCenter').touchMov({
+    mov: 'y',
+    movUp: function (e) {
+      $(e.currentTarget).addClass('hidden');
+      $(e.currentTarget).parent().removeClass('blur');
+    }
+  });
+
   //Menu flotante al presionar app por 1 segundo
   $('.mainScreen .appScreen').mousedown(function(e){
     e.stopPropagation();
@@ -706,21 +738,24 @@ $(function(){
   //Eliminar app
   $('body').on('click', '.fixedMenuFixedApp .menuOption.eliminar', function () {
     let idApp = $('#fixedApp').data('id');
-    if (!idApp) {
+    if (idApp == undefined) {
       var idDeck = $('#fixedApp').data('indeck');
     }
     $(this).parent().remove();
     $('#fixedApp').remove();
     $('.mainScreen').removeClass('filterBlur');
+    console.log(idApp);
     alertaiOS({
-      encabezado: `¿Transferir ${idApp ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
+      encabezado: `¿Transferir ${idApp !== undefined ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
       mensaje: 'Transferir la app la quitará de tu pantalla de inicio conservando todos los datos',
       acciones: [
         {
           texto: 'Eliminar app',
           warning: true,
           callback: function(){
-            if (idApp) {
+            console.log('emtra');
+            if (idApp !== undefined) {
+              console.log('a');
               globalState.apps.splice(idApp, 1);
               renderizarUI();
             } else if (idDeck) {
@@ -740,20 +775,20 @@ $(function(){
   })
   $('.appScreen').on('click', '.app .removeApp', function () {
     let idApp = $(this).parent('.app').data('id');
-    if (!idApp) {
+    if (idApp == 'undefined') {
       var idDeck = $(this).parent('.app').data('indeck');
     }
     $('.appScreen .app .removeApp').remove();
     $('.mainScreen').removeClass('shakingApps');
     alertaiOS({
-      encabezado: `¿Transferir ${idApp ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
+      encabezado: `¿Transferir ${idApp != 'undefined' ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
       mensaje: 'Transferir la app la quitará de tu pantalla de inicio conservando todos los datos',
       acciones: [
         {
           texto: 'Eliminar app',
           warning: true,
           callback: function () {
-            if (idApp) {
+            if (idApp != 'undefined') {
               globalState.apps.splice(idApp, 1);
               renderizarUI();
             } else if (idDeck) {
@@ -771,6 +806,13 @@ $(function(){
       ]
     });
   })
-
-
+  //Toggles de los iconos del controlCenter
+  $('.controlCenter .actionIcon').click(function(){
+    $(this).toggleClass('activo');
+    if ($(this).hasClass('modoVuelo')) {
+      $(this).siblings('.datosCelulares, .wifi').removeClass('activo');
+    } else if ($(this).hasClass('datosCelulares') || $(this).hasClass('wifi')) {
+      $(this).siblings('.modoVuelo').removeClass('activo');
+    }
+  })
 })
