@@ -417,6 +417,7 @@ $(function(){
     container.append(html);
   }
   function alertaiOS(config) {
+    if ($('#iOSAlert').length || $('.mainScreen').hasClass('bloqueado')) return false;
     config = jQuery.extend({
       wrapper: $('.iphone .bordeNegro'),
       acciones: [
@@ -448,39 +449,34 @@ $(function(){
       $('#iOSAlert').fadeOut(function () { $(this).remove() });
       return false;
     }
-    if ($('#iOSAlert').length == 0) {
-      config.wrapper.append(`
-      <div id="iOSAlert">
-        <div class="contenedor hidAnim">
-          <p class="encabezado">${config.encabezado}</p>
-          <p class="mensaje">${config.mensaje}</p>
-          <div class="acciones">${acciones}</div>
-        </div>
+    config.wrapper.append(`
+    <div id="iOSAlert">
+      <div class="contenedor hidAnim">
+        <p class="encabezado">${config.encabezado}</p>
+        <p class="mensaje">${config.mensaje}</p>
+        <div class="acciones">${acciones}</div>
       </div>
-    `);
-      if (config.closable) $('#iOSAlert').prepend('<div class="closable"></div>');
-      $('#iOSAlert').fadeIn('fast', function () {
-        $(this).children('.contenedor').removeClass('hidAnim');
-      }).css('display', 'flex');
-      $(document).on('click', '#iOSAlert .accion', function (e) {
-        console.log(e);
-        let accion = config.acciones[$(e.currentTarget).index()];
-        if (accion.callback && (typeof accion.callback == 'function')) {
-          accion.callback(e);
-        }
-        if (config.closeOnActions) {
-          $(document).off('click', '#iOSAlert .accion');
-          $('#iOSAlert').fadeOut('fast', function () { $(this).remove() });
-        }
-      })
-      if (config.hasOwnProperty('autoclose')) {
-        setTimeout(function () {
-          $(document).off('click', '#iOSAlert .accion');
-          $('#iOSAlert').fadeOut('fast', function () { $(this).remove() });
-        }, config.autoclose)
+    </div>
+  `);
+    if (config.closable) $('#iOSAlert').prepend('<div class="closable"></div>');
+    $('#iOSAlert').fadeIn('fast', function () {
+      $(this).children('.contenedor').removeClass('hidAnim');
+    }).css('display', 'flex');
+    $(document).on('click', '#iOSAlert .accion', function (e) {
+      let accion = config.acciones[$(e.currentTarget).index()];
+      if (accion.callback && (typeof accion.callback == 'function')) {
+        accion.callback(e);
       }
-    } else {
-      $(document).off('click', '#iOSAlert .accion');
+      if (config.closeOnActions) {
+        $(document).off('click', '#iOSAlert .accion');
+        $('#iOSAlert').fadeOut('fast', function () { $(this).remove() });
+      }
+    })
+    if (config.hasOwnProperty('autoclose')) {
+      setTimeout(function () {
+        $(document).off('click', '#iOSAlert .accion');
+        $('#iOSAlert').fadeOut('fast', function () { $(this).remove() });
+      }, config.autoclose)
     }
     $(document).on('click', '#iOSAlert .closable', function () {
       $(document).off('click', '#iOSAlert .accion');
@@ -507,26 +503,21 @@ $(function(){
       //Reloj analogico dinamico
       $('.wrapperApps .app.relojDinamico .icono').reloj();
     }
-    //Timeout para simular el agotamiento de la bateria
-    if (!globalState.bateriaBaja) {
+  }
+  function encendido(){
+    renderizarUI();
+    setTimeout(() => {
+      $('.interactionInfo').removeClass('hidden');
+      $('.iphone').removeClass('initAnimation').addClass('powerOn');
       setTimeout(() => {
-        alertaiOS({
-          encabezado: 'La batería se está agotando',
-          mensaje: 'Batería restante: 10%',
-          acciones: [
-            {
-              texto: 'Ok'
-            }
-          ]
-        });
-        $('.mainScreen .statusBar .bateria').removeClass('mid').addClass('low');
-        globalState.bateriaBaja = true;
-      }, 5000);
-    }
+        $('.iphone').removeClass('powerOn').addClass('arrhe');
+        $('.mainScreen').removeClass('bloqueado');
+      }, 2000);
+    }, 1000);
   }
 
 
-  renderizarUI();
+  encendido();
   //Hora de la statusBar
   $('.statusBar .hora').hora();
   //Hora de la pantalla de bloqueo
@@ -548,6 +539,22 @@ $(function(){
         $(e.currentTarget).siblings('.statusBar').find('.operador').addClass('hidden');
         $(e.currentTarget).siblings('.statusBar').find('.hora').removeClass('hidden');
       }, 300)
+      //Timeout para simular el agotamiento de la bateria
+      if (!globalState.bateriaBaja) {
+        setTimeout(() => {
+          alertaiOS({
+            encabezado: 'La batería se está agotando',
+            mensaje: 'Batería restante: 10%',
+            acciones: [
+              {
+                texto: 'Ok'
+              }
+            ]
+          });
+          $('.mainScreen .statusBar .bateria').removeClass('mid').addClass('low');
+          globalState.bateriaBaja = true;
+        }, 3000);
+      }
     }
   });
   $('.wrapperApps').touchMov({
@@ -744,7 +751,6 @@ $(function(){
     $(this).parent().remove();
     $('#fixedApp').remove();
     $('.mainScreen').removeClass('filterBlur');
-    console.log(idApp);
     alertaiOS({
       encabezado: `¿Transferir ${idApp !== undefined ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
       mensaje: 'Transferir la app la quitará de tu pantalla de inicio conservando todos los datos',
@@ -753,9 +759,7 @@ $(function(){
           texto: 'Eliminar app',
           warning: true,
           callback: function(){
-            console.log('emtra');
             if (idApp !== undefined) {
-              console.log('a');
               globalState.apps.splice(idApp, 1);
               renderizarUI();
             } else if (idDeck) {
@@ -781,14 +785,14 @@ $(function(){
     $('.appScreen .app .removeApp').remove();
     $('.mainScreen').removeClass('shakingApps');
     alertaiOS({
-      encabezado: `¿Transferir ${idApp != 'undefined' ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
+      encabezado: `¿Transferir ${idApp !== undefined ? globalState.apps[idApp].nombre : 'app'} a la biblioteca de apps o eliminar la app?`,
       mensaje: 'Transferir la app la quitará de tu pantalla de inicio conservando todos los datos',
       acciones: [
         {
           texto: 'Eliminar app',
           warning: true,
           callback: function () {
-            if (idApp != 'undefined') {
+            if (idApp !== undefined) {
               globalState.apps.splice(idApp, 1);
               renderizarUI();
             } else if (idDeck) {
@@ -815,4 +819,15 @@ $(function(){
       $(this).siblings('.modoVuelo').removeClass('activo');
     }
   })
+
+  $('.botonGirar').click(function(){
+    $(this).toggleClass('activo');
+    $('.iphone').toggleClass('showBackSide');
+  })
+  $('.botonBloquear').click(function () {
+    $('#iOSAlert').remove();
+    $(this).toggleClass('activo');
+    $('.mainScreen').toggleClass('bloqueado');
+  })
+
 })

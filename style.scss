@@ -46,7 +46,6 @@ $grayDark: #1b1b1b;
   }
 }
 
-
 body{
   overflow-x: hidden;
   color: #666;
@@ -368,12 +367,107 @@ body{
     width: 90%;
     margin: 0 auto;
     padding: 50px 0;
+    overflow: hidden;
+    .interactionInfo{
+      margin-right: 50px;
+      max-width: 500px;
+      &.hidden{
+        >*{
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+      }
+      >*{
+        margin-bottom: 10px;
+        transition: ease all .5s;
+        @for $i from 1 through 5 {
+          &:nth-child(#{$i}){
+            transition-delay: #{$i * .1s};
+          }
+        }
+      }
+      h1{
+        font-size: 30px;
+        margin-bottom: 20px;
+      }
+      .botones{
+        @include flex($jc: flex-start);
+        margin: 20px auto;
+        .boton{
+          padding: 10px 20px;
+          margin-right: 20px;
+          min-width: 225px;
+          color: $blanco;
+          font-size: 12px;
+          text-align: center;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          background-color: $grayDark;
+          box-sizing: border-box;
+          cursor: pointer;
+          &.activo{
+            &:before{
+              content: attr(data-back);
+            }
+          }
+          &:before{
+            content: attr(data-front);
+          }
+        }
+      }
+    }
     .iphone{
       width: 320px;
       height: 640px;
       border-radius: 45px;
       position: relative;
       user-select: none;
+      transition: ease all 1s;
+      &.initAnimation{
+        transform: translateY(200px);
+        opacity: 0;
+        .bordeColor{
+          transform: rotateY(180deg);
+          box-shadow: inset 0 0 7px 1px $blanco;
+          .backSide{
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+          }
+        }
+      }
+      &.powerOn{
+        .bordeColor{
+          .bordeNegro{
+            .logo{
+              opacity: 1;
+              transition-delay: 1s;
+            }
+          }
+        }
+      }
+      &.arrhe{
+        .bordeColor{
+          .bordeNegro{
+            .logo{
+              transform: scale(25);
+              transition-duration: .5s;
+            }
+          }
+        }
+      }
+      &.showBackSide{
+        transform: translateY(-10px);
+        .bordeColor{
+          transform: rotateY(180deg);
+          box-shadow: inset 0 0 7px 1px $blanco;
+          .backSide{
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+          }
+        }
+      }
       &:before, &:after{
         content: "";
         position: absolute;
@@ -399,6 +493,7 @@ body{
         box-shadow: inset 0 0 3px 1px $blanco;
         border-radius: 45px;
         position: relative;
+        transition: ease all .5s;
         &:before, &:after{
           content: "";
           position: absolute;
@@ -454,6 +549,124 @@ body{
             height: 45px;
             &.down{
               top: 210px;
+            }
+          }
+        }
+        .backSide{
+          @include flex;
+          position: absolute;
+          width: calc(100% - 12px);
+          height: calc(100% - 12px);
+          border-radius: 40px;
+          background-color: $mainColor;
+          transform: rotateY(180deg);
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          overflow: hidden;
+          transition: ease all .3s;
+          z-index: 1000;
+          &:before{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle farthest-corner at 245px 0px , rgba($blanco,.1), transparent);
+          }
+          .camaras{
+            @include flex(column, $jc: space-between, $ac: space-between);
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 120px;
+            height: 120px;
+            padding: 10px;
+            border-radius: 25px;
+            box-sizing: border-box;
+            background: linear-gradient(45deg, rgba($negro,.3), transparent);
+            box-shadow: 1px 1px 10px 0 rgba($negro,.4);
+            &:before{
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              border-radius: 25px;
+              box-shadow: -10px 0 10px -10px rgba($blanco,.4);
+            }
+            .cam{
+              @include flex;
+              width: 42px;
+              height: 42px;
+              border-radius: 50%;
+              position: relative;
+              &:nth-child(3){
+                margin: auto 0;
+              }
+              &:before, &:after{
+                content: "";
+                position: absolute;
+              }
+              &:before{
+                width: calc(100% + 10px);
+                height: calc(100% + 10px);
+                border-radius: 50%;
+                box-shadow: -2px 2px 8px 0 $negro;
+                background: linear-gradient(45deg, $mainColor 65%, rgba($blanco,.5));
+              }
+              &:after{
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background-color: $grayDark;
+                border: 9px solid rgba($negro,.2);
+                position: relative;
+                box-sizing: border-box;
+              }
+              .lente{
+                position: absolute;
+                width: 25%;
+                height: 25%;
+                border-radius: 50%;
+                box-shadow: inset 2px 0px 4px -4px $blanco;
+                background: radial-gradient(ellipse farthest-corner at 8px 2px, $mainColor, $negro);
+                z-index: 1;
+              }
+            }
+            .flash, .sensor{
+              position: absolute;
+              right: 20px;
+              width: 22px;
+              height: 22px;
+              border-radius: 50%;
+              &:before{
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+              }
+            }
+            .flash{
+              top: 5px;
+              background-color: $blanco;
+              &:before{
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(#fff291, #ffd5fe);
+              }
+            }
+            .sensor{
+              bottom: 5px;
+              background-color: $negro;
+              &:before{
+                top: -3px;
+                right: -7px;
+                width: 3px;
+                height: 3px;
+                background-color: $negro;
+              }
             }
           }
         }
@@ -558,6 +771,16 @@ body{
               }
             }
           }
+          .logo{
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            opacity: 0;
+            transition: ease all .3s;
+            svg{
+              color: $blanco;
+            }
+          }
           .mainScreen{
             @include imagen('./wallpaper.jpg');
             width: calc(100% - 14px);
@@ -569,6 +792,11 @@ body{
             position: relative;
             overflow: hidden;
             transition: ease all 1s;
+            &.bloqueado{
+              opacity: 0;
+              pointer-events: none;
+              transition: ease all .2s;
+            }
             &.blur{
               background-image: url(./wallpaperBlur.jpg);
               transition-duration: .5s;
@@ -1816,6 +2044,19 @@ body{
                 }
               }
             }
+          }
+        }
+      }
+      .logo{
+        width: 80px;
+        height: 80px;
+        position: relative;
+        svg{
+          width: 100%;
+          height: 100%;
+          color: rgba($negro,.3);
+          path{
+            fill: currentColor;
           }
         }
       }

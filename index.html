@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,16 @@
 <body>
   <section class="iphoneMock">
     <div class="container">
-      <div class="iphone">
+      <div class="interactionInfo hidden">
+        <h1>iPhone 12. iOS 14</h1>
+        <p>Interfaz interactiva del <b>iPhone 12</b> con el nuevo <b>iOS 14.</b></p>
+        <p>Algunas funciones son interactivas, se agregaron eventos para simular los gestos touch de los celulares, por lo pronto solo funciona en PC.</p>
+        <div class="botones">
+          <div class="boton botonGirar" data-front="Ver parte trasera" data-back="Ver parte frontal"></div>
+          <div class="boton botonBloquear" data-front="Bloquear pantalla" data-back="Desbloquear pantalla"></div>
+        </div>
+      </div>
+      <div class="iphone initAnimation">
         <div class="bordeColor">
           <div class="botones">
             <div class="switch"></div>
@@ -17,12 +26,39 @@
             <div class="vol down"></div>
             <div class="touchID"></div>
           </div>
+          <div class="backSide">
+            <div class="camaras">
+              <div class="cam">
+                <div class="lente"></div>
+              </div>
+              <div class="cam">
+                <div class="lente"></div>
+              </div>
+              <div class="cam">
+                <div class="lente"></div>
+              </div>
+              <div class="flash"></div>
+              <div class="sensor"></div>
+            </div>
+            <div class="logo">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                <path d="M48.334 33.875c-.093-7.593 6.169-11.249 6.45-11.436a13.669 13.669 0 0 0-10.936-5.906c-4.674-.469-9.067 2.718-11.5 2.718-2.337 0-5.982-2.718-9.908-2.625a14.765 14.765 0 0 0-12.339 7.5C4.868 33.313 8.794 47 13.935 54.4c2.524 3.656 5.515 7.78 9.441 7.593 3.832-.187 5.235-2.437 9.815-2.437S39.08 62 43.1 61.9c4.113-.094 6.637-3.75 9.16-7.405a29.782 29.782 0 0 0 4.113-8.53 13.082 13.082 0 0 1-8.039-12.09z"></path>
+                <path d="M40.762 11.565A13.423 13.423 0 0 0 43.847 2a13.194 13.194 0 0 0-8.787 4.5c-1.963 2.25-3.645 5.812-3.178 9.28 3.365.284 6.824-1.68 8.88-4.215z"></path>
+              </svg>
+            </div>
+          </div>
           <div class="bordeNegro">
             <div class="notch">
               <div class="bocina"></div>
               <div class="camara"></div>
             </div>
-            <div class="mainScreen">
+            <div class="logo">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                <path d="M48.334 33.875c-.093-7.593 6.169-11.249 6.45-11.436a13.669 13.669 0 0 0-10.936-5.906c-4.674-.469-9.067 2.718-11.5 2.718-2.337 0-5.982-2.718-9.908-2.625a14.765 14.765 0 0 0-12.339 7.5C4.868 33.313 8.794 47 13.935 54.4c2.524 3.656 5.515 7.78 9.441 7.593 3.832-.187 5.235-2.437 9.815-2.437S39.08 62 43.1 61.9c4.113-.094 6.637-3.75 9.16-7.405a29.782 29.782 0 0 0 4.113-8.53 13.082 13.082 0 0 1-8.039-12.09z"></path>
+                <path d="M40.762 11.565A13.423 13.423 0 0 0 43.847 2a13.194 13.194 0 0 0-8.787 4.5c-1.963 2.25-3.645 5.812-3.178 9.28 3.365.284 6.824-1.68 8.88-4.215z"></path>
+              </svg>
+            </div>
+            <div class="mainScreen bloqueado">
               <div class="statusBar">
                 <div class="leftSide">
                   <div class="operador">Telcel</div>
