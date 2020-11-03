@@ -224,7 +224,8 @@ $(function(){
       meses: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
       dias: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
     },
-    bateriaBaja: false
+    bateriaBaja: false,
+    draggScreen: false
   }
   //EXtended Functions
   $.fn.extend({
@@ -247,6 +248,7 @@ $(function(){
         initCoords = { x: e.pageX, y: e.pageY };
         downCoords = { x: movCoords.x, y: movCoords.y };
         el.mousemove(function (e2) {
+          globalState.draggScreen = true;
           movCoords = { x: e2.pageX, y: e2.pageY };
           if (config.mov === 'x') {
             config.updateMovX(e2, (movCoords.x - initCoords.x))
@@ -264,6 +266,7 @@ $(function(){
               (movCoords.y - initCoords.y) > 0 ? config.movDown(ex) : config.movUp(ex);
             }
           }
+          globalState.draggScreen = false;
           config.finishMov(ex);
           el.off('mousemove');
           el.off('mouseup');
@@ -279,6 +282,7 @@ $(function(){
               (movCoords.y - initCoords.y) > 0 ? config.movDown(a) : config.movUp(a);
             }
           }
+          globalState.draggScreen = false;
           config.finishMov(a);
           el.off('mousemove');
           el.off('mouseup');
@@ -386,6 +390,9 @@ $(function(){
   })
   
   //Functions
+  function sanearString(string){
+    return string.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
   function pintarApps(apps, container, containerDots){
     container.empty();
     containerDots.empty();
@@ -396,8 +403,8 @@ $(function(){
       if (appCount == 1) html += '<div class="grupo">';
       let clases = 'app';
       if (app.type == 'widgetFull') clases = clases + ' widgetFull';
-      if (app.dinamico && app.type == 'app') clases = `${clases} ${app.nombre.toLowerCase()}Dinamico`;
-      html += `<div class="${clases}" data-app="${app.type + app.nombre}" data-id="${idArr}">
+      if (app.dinamico && app.type == 'app') clases = `${clases} ${sanearString(app.nombre).toLowerCase()}Dinamico`;
+      html += `<div class="${clases}" data-app="${app.type + sanearString(app.nombre)}" data-id="${idArr}">
                 ${app.notificaciones ? `<div class="notificacion">${app.notificaciones}</div>` : ''}
                 <div class="icono" style="${!app.dinamico ? `background-image:url(${app.icono});` : 'background-color:#fff;'}"></div>
                 <p class="nombre">${app.nombre}</p>
@@ -483,6 +490,68 @@ $(function(){
       $('#iOSAlert').fadeOut('fast', function () { $(this).remove() });
     })
   }
+  function camara(){
+    if (!$('.camaraApp').length) {
+      $('.mainScreen').append(`
+        <div class="camaraApp hidden">
+          <div class="topBar">
+            <div class="camIco flash">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <path d="M41 6L13 34h14.187L23 58l27.998-29.999H37L41 6z"></path>
+              </svg>
+            </div>
+            <div class="camIco chevronUp">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                <path d="M20 40l11.994-14L44 40"></path>
+              </svg>
+            </div>
+            <div class="camIco circles">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                <path d="M45 32a17 17 0 0 1-9.8 5.7M22 34.8a17 17 0 1 1 26.2-8.5"></path>
+                <path d="M15.8 26.3a17 17 0 1 1-5.8 2.3"></path>
+                <path d="M32 54a17 17 0 0 1-3.3-16m3.3-6a17 17 0 1 1 6 26.5"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="camaraArea">
+            <video src="https://firebasestorage.googleapis.com/v0/b/fotos-3cba1.appspot.com/o/videos%2Fvideo1.mp4?alt=media&token=ec9e8e82-e2b9-456a-86a3-feb04eb4ac21" autoplay="true" loop="true"></video>
+          </div>
+          <div class="modosCamara">
+            <div class="modo">Cámara lenta</div>
+            <div class="modo">Video</div>
+            <div class="modo activo">Foto</div>
+            <div class="modo">Retrato</div>
+            <div class="modo">Panorámica</div>
+          </div>
+          <div class="obturadorArea">
+            <div class="imgPreview" style="background-image: url(https://firebasestorage.googleapis.com/v0/b/fotos-3cba1.appspot.com/o/selfie.jpg?alt=media&token=9b87b717-798c-4f37-88f7-b8442bf6655b);"></div>
+            <div class="obturador"></div>
+            <div class="toggleCam">
+              <div class="camIco">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                  <path d="M54.741 28.14a23.002 23.002 0 0 1-39.088 19.124"></path>
+                  <path d="M9.065 33.62A23.008 23.008 0 0 1 31.917 8a22.934 22.934 0 0 1 16.262 6.732"></path>
+                  <path d="M2 24l7.065 9.619L18 26"></path>
+                  <path d="M62 38l-7.259-9.86L46 36"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>`
+      );
+      $('.camaraApp').touchMov({
+        mov: 'y',
+        movUp: function (e) {
+          $(e.currentTarget).addClass('hidden');
+          $('.statusBar').removeClass('onlyLed camActiv');
+        }
+      });
+    }
+    setTimeout(function(){
+      $('.statusBar').addClass('onlyLed camActiv');
+      $('.camaraApp').removeClass('hidden');
+    }, 100)
+  }
   function renderizarUI(){
     //Pintamos todas las apps en el contenedor principal
     pintarApps(globalState.apps, $('.wrapperApps'), $('.wrapperDots'));
@@ -515,7 +584,6 @@ $(function(){
       }, 2000);
     }, 1000);
   }
-
 
   encendido();
   //Hora de la statusBar
@@ -666,61 +734,66 @@ $(function(){
 
   //Menu flotante al presionar app por 1 segundo
   $('.mainScreen .appScreen').mousedown(function(e){
-    e.stopPropagation();
     if ($(this).parent().hasClass('shakingApps')) return false;
     let timeout = setTimeout(() => {
-      if ($(e.target).hasClass('app') || $(e.target).parents('.app').length) {
-        //Dio click en una app. Ok, le mostraremos el menu flotante
-        $(this).parent().addClass('filterBlur');
-        let app;
-        if ($(e.target).hasClass('app')) {
-          app = $(e.target);
-        } else {
-          app = $(e.target).parents('.app');
-        }
-        let appClon = app.clone();
-        appClon.attr('id', 'fixedApp');
-        appClon.css({
-          top: app[0].getBoundingClientRect().top,
-          left: app[0].getBoundingClientRect().left,
-          width: app[0].getBoundingClientRect().width
-        })
-        $('body').append(appClon);
-        let rectsIphone = $('.iphone .bordeNegro')[0].getBoundingClientRect();
-        let rectsApp = appClon.children('.icono')[0].getBoundingClientRect();
-        let cssMenu = `left: ${((rectsIphone.x + rectsIphone.width) - rectsApp.x) >= 190 ? rectsApp.x : (rectsApp.x + rectsApp.width) - 190}px;`;
-        if ((rectsIphone.top + (65 * 2)) >= rectsApp.top) {
-          cssMenu += `top : ${rectsApp.y + rectsApp.height}px; transform: translateY(10px)`;
-        } else {
-          cssMenu += `top: ${rectsApp.y}px; transform: translateY(calc(-100% - 10px));`;
-        }
-        $('body').append(`
-          <div class="fixedMenuFixedApp" style="${cssMenu}">
-            <div class="menuOption eliminar">Eliminar app
-              <div class="icono">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-                  <circle cx="32" cy="32" r="30"></circle>
-                  <path d="M48 32H16"></path>
-                </svg>
+      console.log('a');
+      if (!globalState.draggScreen) {
+        if ($(e.target).hasClass('app') || $(e.target).parents('.app').length) {
+          //Dio click en una app. Ok, le mostraremos el menu flotante
+          $(this).parent().addClass('filterBlur');
+          let app;
+          if ($(e.target).hasClass('app')) {
+            app = $(e.target);
+          } else {
+            app = $(e.target).parents('.app');
+          }
+          let appClon = app.clone();
+          appClon.attr('id', 'fixedApp');
+          appClon.css({
+            top: app[0].getBoundingClientRect().top,
+            left: app[0].getBoundingClientRect().left,
+            width: app[0].getBoundingClientRect().width
+          })
+          $('body').append(appClon);
+          let rectsIphone = $('.iphone .bordeNegro')[0].getBoundingClientRect();
+          let rectsApp = appClon.children('.icono')[0].getBoundingClientRect();
+          let cssMenu = `left: ${((rectsIphone.x + rectsIphone.width) - rectsApp.x) >= 190 ? rectsApp.x : (rectsApp.x + rectsApp.width) - 190}px;`;
+          if ((rectsIphone.top + (65 * 2)) >= rectsApp.top) {
+            cssMenu += `top : ${rectsApp.y + rectsApp.height}px; transform: translateY(10px)`;
+          } else {
+            cssMenu += `top: ${rectsApp.y}px; transform: translateY(calc(-100% - 10px));`;
+          }
+          $('body').append(`
+            <div class="fixedMenuFixedApp" style="${cssMenu}">
+              <div class="menuOption eliminar">Eliminar app
+                <div class="icono">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="30"></circle>
+                    <path d="M48 32H16"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="menuOption shaking">Editar pantalla de inicio
+                <div class="icono">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                    <path d="M14 59a3 3 0 0 0 3 3h30a3 3 0 0 0 3-3v-9H14zM50 5a3 3 0 0 0-3-3H17a3 3 0 0 0-3 3v5h36zm0 45V10m-36 0v40"></path>
+                    <circle cx="32" cy="56" r="2"></circle>
+                  </svg>
+                </div>
               </div>
             </div>
-            <div class="menuOption shaking">Editar pantalla de inicio
-              <div class="icono">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-                  <path d="M14 59a3 3 0 0 0 3 3h30a3 3 0 0 0 3-3v-9H14zM50 5a3 3 0 0 0-3-3H17a3 3 0 0 0-3 3v5h36zm0 45V10m-36 0v40"></path>
-                  <circle cx="32" cy="56" r="2"></circle>
-                </svg>
-              </div>
-            </div>
-          </div>
-        `);
-      } else {
-        //Dio click en cualquier parte del appScreen. Ok, es hora del shaking apps
-        $(this).parent().addClass('shakingApps');
-        $('.appScreen .app').append('<div class="removeApp"></div>');
+          `);
+        } else {
+          //Dio click en cualquier parte del appScreen. Ok, es hora del shaking apps
+          $(this).parent().addClass('shakingApps');
+          $('.appScreen .app').append('<div class="removeApp"></div>');
+        }
       }
     }, 1000);
     $(this).mouseup(function(){
+      clearTimeout(timeout);
+    })
+    $(this).mouseleave(function () {
       clearTimeout(timeout);
     })
   })
@@ -820,11 +893,19 @@ $(function(){
     }
   })
 
+  //UI de algunas apps
+  $('body').on('click', '.app[data-app="appCamara"]', function(){
+    camara();
+  })
   $('.botonGirar').click(function(){
     $(this).toggleClass('activo');
     $('.iphone').toggleClass('showBackSide');
   })
   $('.botonBloquear').click(function () {
+    if (!$(this).hasClass('activo')) {
+      let sonido = new Audio('https://firebasestorage.googleapis.com/v0/b/fotos-3cba1.appspot.com/o/sonidos%2FiphoneLockScreen.mp3?alt=media&token=e2a00013-3c33-429b-866b-b2d6399b343f');
+      sonido.play();
+    }
     $('#iOSAlert').remove();
     $(this).toggleClass('activo');
     $('.mainScreen').toggleClass('bloqueado');
