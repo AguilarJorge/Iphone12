@@ -319,7 +319,7 @@ body{
     padding-top: 10px;
     border-radius: 10px;
     text-align: center;
-    background-color: rgb($blanco,.95);
+    background-color: rgba($blanco,.95);
     box-shadow: 0 0 10px 0 rgba($negro,.1);
     box-sizing: border-box;
     transition: cubic-bezier(0.68, -0.55, 0.27, 1.55) all 0.3s;
@@ -366,7 +366,7 @@ body{
     @include flex;
     width: 90%;
     margin: 0 auto;
-    padding: 50px 0;
+    padding: 20px 0;
     overflow: hidden;
     .interactionInfo{
       width: 600px;
@@ -774,7 +774,7 @@ body{
                 height: 4px;
                 margin-top: 2px;
                 margin-right: 2px;
-                background-color: rgb($blanco,.1);
+                background-color: rgba($blanco,.1);
               }
             }
           }
@@ -809,7 +809,7 @@ body{
               transition-duration: .5s;
             }
             &.filterBlur{
-              background-color: rgb($negro,.2);
+              background-color: rgba($negro,.2);
               filter: blur(5px);
               pointer-events: none;
               transition-duration: .2s;
@@ -841,7 +841,7 @@ body{
                 .wrapperDots{
                   padding: 3px 10px;
                   border-radius: 20px;
-                  background-color: rgb($blanco,.5);
+                  background-color: rgba($blanco,.5);
                   .dot{
                     background-color: rgba($negro,.3);
                   }
